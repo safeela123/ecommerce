@@ -1,0 +1,159 @@
+*{
+    margin:0px;
+}
+
+.nav{
+    height:80px;
+    width:cover;
+    display:flex;
+    background-color:chartreuse;
+    justify-content:space-evenly;
+    align-items:center;
+}
+.logo{
+    height:50px;
+    width:150px;;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    position:absolute;
+    left:30px;
+
+}
+.list ul{
+    height:80px;
+    width:400px;
+    display:flex;
+    justify-content: space-around;
+    align-items:center;
+    position:relative;
+    right:20px;
+    transform:translate(120px);
+   
+}
+.list a{
+    text-decoration:none;
+    color:black;
+}
+.list a:hover{
+    transform:translateY(-3px);
+    color:blueviolet;
+}
+.search input{
+    height:10px;
+    width:300px;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    position:relative;
+    left:120px;
+    padding:10px;
+    top:15px;
+    border-radius:10px;
+}
+.search img{
+    height:30px;
+    width:30px;
+    transform:translate(411px,-17px);
+    background-color:yellow;
+    background-size: 40px,40px;
+    border-radius: 10px;
+
+}.list2{
+    height:60px;
+    width:50%;
+    display:flex;
+    justify-content: space-around;
+    align-items:center;
+    
+    /* transform:translate(120px); */
+   
+
+}
+.nav2 a{
+    text-decoration:none;
+    color:black;
+}
+.nav2{
+    height:50px;
+    width:cover;
+    display:flex;
+    background-color:rgb(174, 255, 208);
+    justify-content:space-evenly;
+    align-items:center;
+}
+.nav2 a:hover{
+   transform:translateY(-3px);
+   color:blueviolet;
+    
+}
+.list2 .page{
+    color:green;
+}
+.form{
+height:500px;
+width:80%;
+border:2px solid black;
+}
+.form form{
+position:relative;
+top:70px;
+left:100px;
+}
+
+
+.first{
+    height:30px;
+    width:30%;
+    margin-right:10%;
+}
+.last{
+    height:30px;
+    width:30%;
+   
+}
+.ad1{
+    height:30px;
+    width:30%;
+    margin-top:30px;
+    margin-right:10.5%;
+}
+.ad2{
+    height:30px;
+    width:30%;
+     
+}
+.city{
+    height:30px;
+    width:30%;
+    margin-top:30px;
+    margin-right:10.5%;
+}
+.pin{
+    height:30px;
+    width:30%;
+      
+}
+.wp{
+    height:30px;
+    width:30%;
+    margin-top:30px;
+    margin-right:10.5%; 
+}
+.mb{
+    height:30px;
+    width:30%;
+        
+}
+p {
+    border:2px solid black;
+    width:50px;
+    text-align:center;
+    background-color:orange;
+}
+p:hover{
+box-shadow:2px green;
+}

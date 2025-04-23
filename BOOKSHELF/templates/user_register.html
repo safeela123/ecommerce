@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOGIN_PAGE</title>
+    <link rel="stylesheet" href="{% static 'css/bookreg.css'%}">                                                                                                                                               
+</head>
+<body>
+    <div class="main">
+      
+
+        <img src="https://w0.peakpx.com/wallpaper/118/620/HD-wallpaper-nature-book-colorful-splendor-book-nature-beautiful-landscape.jpg" height="100%" width="100%" alt="">
+    <div class="sub"> 
+        
+    <form action="{% url 'register' %}" method="POST">
+        {% csrf_token %}
+        <h2>REGISTER</h2>
+        <input type="text" placeholder="username" name="name" id="" class="input" style="transform:translate(0px,20px);"><br>
+        <input type="password" placeholder="password" name="psw" class="input" style="transform:translate(0px,20px);"><br>
+        <input type="email" placeholder="email" name="email" class="input" style="transform:translate(0px,20px);"><br>
+        <input type="password" placeholder="confirm password" name="cnf_psw" class="input" style="transform:translate(0px,20px);"><br>
+        <input type="submit" value="submit" class="button">
+        <p>already have an account ? <a href="../" style="text-decoration:none;color:rgb(114, 255, 49)">Login</a></p>
+    </form>
+    </div></div>
+</body>
+</html>

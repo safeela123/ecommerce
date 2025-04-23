@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/adress.css' %}">
+</head>
+<body>
+    <div class="main">
+                <div class="nav">
+                    <div class="logo">
+                        <img src="{% static 'images/logo.png'%}" height="60px" width="60px" alt="" style="border-radius:70%;">
+                        <h3>BOOKSHELF</h3>
+                    </div>
+                    <div class="cart"></div>
+                    <div class="search">
+                        <input type="text" name="search" id="" placeholder="search">
+            
+                        <img src="https://img.icons8.com/?size=100&id=aBNtkpYvycsP&format=png&color=000000" height="20px" width="20px" alt="">
+                    </div>
+                <div class="list">
+                    <ul type="none">
+                        <li><a href="">Home</a></li>
+                        <li><a href="../">Sign In</a></li>
+                        <li><a href="../register">Sign Up</a></li>
+                        <li><a href="../logout">Sign Out</a></li>
+                        <li><a href="">Contact Us</a></li>
+                        </ul>
+                        </div>
+                    </div>
+                        <div class="nav2">
+                            <div class="list2">
+                             
+                                    <a href="../mlmchild ">Children's Books</a>
+                                    <a href="../mlmdetective">Detective Novels </a>
+                                    <a href="../mlmfiction">Fiction</a>
+                                    <a href="../mlmbiography">Biography</a>
+                                    <a href="../mlmebook">EBooks</a>
+                                    
+                      
+                        </div>
+                    </div>
+                       
+                        <div class="form">
+                            <form action="../adress" method="">
+                                {% csrf_token %}
+                                <input type="text" placeholder="First Name" class="first">
+                                <input type="text" placeholder="Second Name" class="last"><br>
+                                <textarea placeholder="adress1" rows="2" cols="40" class="ad1"></textarea>
+                                <textarea placeholder="adress2" rows="2" cols="40" class="ad2"></textarea><br>
+                                <input type="text" placeholder="city" class="city">
+                                <input type="integer" placeholder="pincode" class="pin"><br>
+                                <input type="tel" placeholder="Whatsapp Number" class="wp">
+                                <input type="tel" placeholder="mobile Number" class="mb"><br>
+                                <p><a href="" class="next" style="text-decoration:none;color:black">next</a></p>
+                                </form>
+                        </div>
+                        </div>
+                   
+                        </body>
+                        </html>
+        

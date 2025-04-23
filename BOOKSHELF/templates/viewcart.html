@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/' %}">
+</head>
+<body>
+    <h2>Your Cart</h2>
+
+{% if cart_items %}
+    <ul>
+        {% for item in cart_items %}
+            <li>
+                {{ item.item.name|truncatechars:40 }} - {{ item.quantity }} × ₹{{ item.item.price }} = ₹{{ item.total_price }}
+                <form method="post" action="{% url 'remove_from_cart' item.item.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Remove</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+    <p><strong>Total:</strong> ₹{{ total }}</p>
+{% else %}
+    <p>Your cart is empty.</p>
+{% endif %}
+<p><a href="../index">Continue Shopping</a></p>
+
+</body>
+</html>
