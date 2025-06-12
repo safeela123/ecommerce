@@ -97,6 +97,8 @@
 height:500px;
 width:80%;
 border:2px solid black;
+position:relative;
+left:150px;
 }
 .form form{
 position:relative;
@@ -121,12 +123,25 @@ left:100px;
     margin-top:30px;
     margin-right:10.5%;
 }
-.ad2{
+.city{
     height:30px;
     width:30%;
-     
+    margin-top:20px;
+    margin-right:10.5%;
 }
-.city{
+.state{
+    height:30px;
+    width:30%;
+    margin-top:30px;
+    margin-right:10.5%;
+}
+.district{
+    height:30px;
+    width:30%;
+    margin-top:30px;
+    margin-right:10.5%;
+}
+.country{
     height:30px;
     width:30%;
     margin-top:30px;
@@ -148,12 +163,17 @@ left:100px;
     width:30%;
         
 }
-p {
+.next{
     border:2px solid black;
-    width:50px;
+    width:140px;
+    height:32px;
     text-align:center;
     background-color:orange;
+    position:absolute;
+    left:30%;
+    bottom:-20%;
 }
 p:hover{
 box-shadow:2px green;
 }
+

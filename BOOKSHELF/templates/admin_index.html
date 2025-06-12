@@ -79,9 +79,11 @@
                             <td>
                     <select name="lname">
                         <option selected disabled>Select Language</option>
-                        {% for i in lnames %}
+                        {% for i in lnames%}
                         <option value="{{i.pk}}">{{i.lname}}</option>
-                        {% endfor %}
+                       {% endfor %}
+
+                        
                         </select>
                         </td>
                         </tr>
@@ -127,15 +129,14 @@
                     </td>
                     </tr>
                     <tr>
-                        <th colspan="2">
-                    <input type="submit" value="submit" class="btn">
+                        <th colspan="2" >
+                <p><input type="submit" value="Next"class="btn"></p>
                         </th>
                         </tr>
                         </table>
                         </form>
                         {% endif %}
                     </div>
-                
               
 
     </div>

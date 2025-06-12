@@ -5,28 +5,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="{% static 'css/' %}">
+    <link rel="stylesheet" href="{% static 'css/viewcart.css' %}">
 </head>
 <body>
-    <h2>Your Cart</h2>
+     <div class="main">
+        <div class="nav">
+            <div class="logo">
+                <img src="{% static 'images/logo.png'%}" height="60px" width="60px" alt="image" style="border-radius:70%;">
+                <h3>BOOKSHELF</h3>
+            </div>
+
+          
+            <div class="cart">
+                 <p>cart</p>
+            <a href="../cart"><img src="{% static 'images/carticon.png' %}"></a>
+            
+            </div>
+            <div class="search">
+                <input type="text" name="search" id="" placeholder="search">
+    
+                <img src="https://img.icons8.com/?size=100&id=aBNtkpYvycsP&format=png&color=000000" height="20px" width="20px" alt="">
+        </div>
+
+        <div class="list">
+            <ul type="none">
+                <li><a href="../index">Home</a></li>
+                <li><a href="../">Sign In</a></li>
+                <li><a href="../register">Sign Up</a></li>
+                <li><a href="../logout">Sign Out</a></li>
+                <li><a href="">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="nav2">
+            <div class="list2">
+             
+                    <a href="../mlmchild " >Children's Books</a>
+                    <a href="../mlmdetective">Detective Novels </a>
+                    <a href="../mlmfiction">Fiction</a>
+                    <a href="../mlmbiography" >Biography</a>
+                    <a href="../mlmebook">EBooks</a>
+                    
+        </div>
+        </div>
+    
 
 {% if cart_items %}
-    <ul>
+
+<h2>Your Cart</h2>
+    <ul type="none">
+      
+      
         {% for item in cart_items %}
-            <li>
-                {{ item.item.name|truncatechars:40 }} - {{ item.quantity }} × ₹{{ item.item.price }} = ₹{{ item.total_price }}
+        <div class="product">
+      {% if item.item.doc %}
+  <img src="{{ item.item.doc.url }}" width="100" height="150" alt="{{ item.item.name }}" style="object-fit: cover; border-radius: 8px;">
+{% else %}
+  <img src="{% static 'path/to/default-image.jpg' %}" width="100" height="100" alt="Default Image" style="object-fit: cover; border-radius: 8px;">
+{% endif %}
+            <li class="name"> {{ item.item.name|truncatechars:40 }}</li> 
+            <div class="inline">
+                <li class="quantity"> <span>₹{{ item.item.price }}</span> x {{ item.quantity }} items</li>
+                <li class="payable"> ₹{{item.Total_price}} Rs</li>
+               
                 <form method="post" action="{% url 'remove_from_cart' item.item.id %}">
                     {% csrf_token %}
-                    <button type="submit">Remove</button>
+                    <button type="submit" class="btn">Remove</button>
                 </form>
             </li>
+        </div>
+       
+            <form method="post" action="{% url 'update_cart_quantity' item.id %}">
+
+        <div class="count">
+        {% csrf_token %}
+        <button type="submit" name="action" value="decrement" class="decrement">Dec</button>
+        <input type="text" value="{{ item.quantity }}_item" readonly class="quantity_box" />
+        <button type="submit" name="action" value="increment" class="increment">Inc</button>
+        </div>
+    </form>
+          
+         </div>
         {% endfor %}
     </ul>
-    <p><strong>Total:</strong> ₹{{ total }}</p>
+    <p class="total"><strong>Total:</strong> ₹{{ total_price }}Rs</p>
 {% else %}
+<div class="empty">
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfh9odvam9gncuRE3NXLiyaR1LTroFm4RRAQ&s" height="300px" width="400px" alt="empty cart" >
     <p>Your cart is empty.</p>
+    <span><a href="../index">Continue Shopping</a></span>
+    </div>
+    
 {% endif %}
-<p><a href="../index">Continue Shopping</a></p>
+
 
 </body>
 </html>

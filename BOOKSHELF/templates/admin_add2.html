@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{%static 'css/book_admin_index.css' %}">
+</head>
+<body>
+    <div class="main">
+        <div class="nav">
+            <div class="logo">
+                <img src="{% static 'images/logo.png'%}" height="60px" width="60px" alt="" style="border-radius:70%;">
+                <h3>BOOKSHELF</h3>
+            </div>
+
+          
+            <div class="cart"></div>
+            <div class="search">
+                <input type="text" name="search" id="" placeholder="search">
+    
+                <img src="https://img.icons8.com/?size=100&id=aBNtkpYvycsP&format=png&color=000000" height="20px" width="20px" alt="">
+        </div>
+
+        <div class="list">
+            <ul type="none">
+                <li><a href="../adbookview">Product View</a></li>
+                <li><a href="../adindex"class="page">Home</a></li>
+                <li><a href="../logout">Sign Out</a></li>
+        
+                </ul>
+            </div>
+        </div>
+        <div class="nav2">
+            <div class="list2">
+                <select>
+                    <option selected>Select Language</option>
+                    <option value="English">English</option>
+                    <option value="Malayalam">Malayalam</option>
+                    </select>
+        
+                    <a href="../admlmchild">Children's Books</a>
+                    <a href="../admlmdetective">Detective Novels </a>
+                    <a href="../admlmfiction">Fiction</a>
+                    <a href="../admlmbiography">Biography</a>
+                    <a href="../admlmebook">EBooks</a>
+                    
+        </div>
+    </div>
+
+        <div class="form">
+            <form action="../add2" method="POST">
+                {% csrf_token %}
+              
+                    {% if user.is_authenticated %}
+                 
+            <table cellspacing="10" cellpadding="10">
+                <tr></tr><tr></tr><tr></tr><tr></tr><tr></tr>
+
+                <tr>
+                    <td><p>name       :</p></td>
+                 
+                    <td><input type="text" placeholder="enter the name of book" name="name" value="{{data.name}}"></td></tr>
+                
+                    <tr>
+                        <td><p>Author       :</p></td>
+                        <td><input type="text" placeholder="enter the author" name="author"></td>
+                    </tr>
+                    
+                    <tr>
+                    <td>
+                    <p>ISBN:</p>
+                    </td>
+                    <td>
+                    <input type="number" placeholder="enter ISBN number" name="isbn" required class="s2">
+                    </td>
+                    </tr>
+                    <tr> 
+                        <td>
+                    <p>publishing date         :</p>
+                    </td>
+                    <td>
+                    <form>
+                    <input type="date" placeholder="publishing date" name="date" value="12/3/2025" min="1/1/1990" max="1/1/2030" class="s3">
+                    </form>
+                    </td>
+                    </tr>
+                    <tr>
+                        <td>
+                    <p>Publisher     :</p>
+                    </td>
+                    <td>
+                    <input type="text" name="publisher" class="s4">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                <p>Binding     :</p>
+                </td>
+                <td>
+                <input type="text" name="binding" class="s4">
+                </td>
+            </tr>
+                        <tr>
+                            <td>
+                        <p>Edition   :</p>
+                        </td>
+                        <td>
+                        <input type="number" name="edition" class="s4">
+                        </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                        <p>Number of pages     :</p>
+                        </td>
+                        <td>
+                        <input type="number" name="pagenumber" class="s4">
+                        </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                        <p>short description of book    :</p>
+                        </td>
+                        <td>
+                        <textarea rows="3" cols="39" name="describe" class="s4" placeholder="add your description"></textarea>
+                        </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>
+                        <p>stock    :</p>
+                        </td>
+                        <td>
+                            
+                        <select name="stock" class="s4">
+                        <option selected disabled>select option</option>
+                        <option value="in stock"> ✔️ in stock </option>
+                        <option value="out of stock"> ❌ out of stock</option>
+                        </select>
+                        </form>
+                        </td>
+                        </tr>
+
+                        <tr>
+                            <th colspan="2" >
+                    <input type="submit" value="submit" style="background-color:black;color:white">
+                            </th>
+                            </tr>
+
+
+                    
+                        </table>
+                        </form>
+                        {% endif %}
+                    </div>
+                
+              
+
+    </div>
+     
+
+</div>
+</body>
+</html>

@@ -79,9 +79,12 @@
                             <td>
                     <select name="lname">
                         <option selected disabled>Select Language</option>
-                        {% for i in lnames %}
-                        <option value="{{i.pk}}">{{i.lname}}</option>
-                        {% endfor %}
+                      
+                         {% for i in lnames %}
+                            <option value="{{i.id}}">{{i.lname}}</option>
+                           
+                            {% endfor %}
+                       
                         </select>
                         </td>
                         </tr>
@@ -96,8 +99,12 @@
                         <select name="cname">
                             <option selected disabled>Select Category</option>
                             {% for i in cnames %}
-                            <option value="{{i.pk}}">{{i.cname}}</option>
-                           {% endfor %}
+                            <option value="{{i.id}}">{{i.cname}}</option>
+                           
+                            {% endfor %}
+
+
+                           
                             </select>
                             </td>
                             </tr>

@@ -18,20 +18,16 @@
           
            
 
-            <div class="search">
-                <input type="text" name="search" id="" placeholder="search">
-    
-                <img src="https://img.icons8.com/?size=100&id=aBNtkpYvycsP&format=png&color=000000" height="20px" width="20px" alt="">
-        </div>
-
-
-        <form action="../index" method="POST">
-            {% csrf_token %}
-        </form>
-
-
-        <div class="list">
+        <div class="search">
+        <form method="get" action="../index" style="display: flex; align-items: center;">
+        <input type="text" name="q" placeholder="Search books..."  value="{{ request.GET.q|default:'' }}"  style="transform:translate(100px,-15px)" class="input">
+        <button type="submit" style="background: none; border: none; cursor: pointer; margin-left:5px;transform:translate(230px,00px);border:2px solid black;padding:6px;background-color:yellow;border-radius:6px" aria-label="Search" >search</button>
+        <img src="https://img.icons8.com/?size=100&id=aBNtkpYvycsP&format=png&color=000000"  height="20px"  width="20px"  alt="Search" style="transform:translate(127px);">
+    </form>
+</div>
+<div class="list">
             <ul type="none">
+            
                 <li><a href="../index" class="page">Home</a></li>
                 {% if user.is_authenticated %}
                 <li><a href=""><img src="{% static 'images/profileicon.png' %}" ></a>
@@ -76,9 +72,15 @@
         <p class="old"><del>₹{{ i.oldprice }}</del></p>
         <p class="dis">{{i.discount}}% OFF</p>
         <div class="buttons">
-        <p class="add"><a href="../addcart/{{i.id}}">Add to Cart</a></p>
-        <p class="buy"><a href="../buy/{{i.id}}">Buy Now</a></p>
-    </div>
+        <p class="add"><a href="../addcart/{{i.id}}" style="text-decoration:none;color:black;font-size:18px;">Add to Cart</a></p>
+        <p class="buy"><a href="../bookdetails/{{i.id}}" style="text-decoration:none;color:black;font-size:18px;">View Book</a></p>
+       
+
+
+         {% empty %}
+    <h1 class="not_found">No products matched</h1>
+
+   
 
 
     </div>
@@ -140,3 +142,4 @@
 
 </body>
 </html>
+ <!-- <p class="buy"><a href="../buy/{{i.id}}" style="text-decoration:none;color:black;font-size:18px;">Buy Now</a></p> -->

@@ -10,7 +10,7 @@
 <body>
    
         <div class="main">
-            <div class="content">
+         
             <div class="nav">
                 <div class="logo">
                     <img src="{% static 'images/logo.png'%}" height="60px" width="60px" alt="" style="border-radius:70%;">
@@ -18,13 +18,15 @@
                 </div>
     
               
+        <div class="search">
+        <form method="get" action="../adbookview" style="display: flex; align-items: center;">
+        <input type="text" name="q" placeholder="Search books..."  value="{{ request.GET.q|default:'' }}"  style="transform:translate(100px,-15px)" class="input">
+        <button type="submit" style="background: none; border: none; cursor: pointer; margin-left:5px;transform:translate(230px,00px);border:2px solid black;padding:6px;background-color:yellow;border-radius:6px" aria-label="Search" >search</button>
+        <img src="https://img.icons8.com/?size=100&id=aBNtkpYvycsP&format=png&color=000000"  height="20px"  width="20px"  alt="Search" style="transform:translate(127px);">
+    </form>
+</div>
                 
-                <div class="search">
-                    <input type="text" name="search" id="" placeholder="search">
-        
-                    <img src="https://img.icons8.com/?size=100&id=aBNtkpYvycsP&format=png&color=000000" height="20px" width="20px" alt="">
-            </div>
-    
+              
             <div class="list">
                 <ul type="none">
                     <li><a href="../adindex">Home</a></li>
@@ -51,7 +53,9 @@
                         
             </div>
             </div>
-            <div class="out">
+           
+        
+                 <div class="out">
             <div class="upload" >
                 {% for i in data %}
                 <div class="output">
@@ -61,74 +65,63 @@
                     <p class="old"><del>₹{{ i.oldprice }}</del></p>
                     <p class="dis">{{i.discount}}% OFF</p>
                     <p class="view"><a href="../adupdate/{{i.pk}}">update</a></p>
-                    <p class="view"><a href="../addelete/{{i.id}}" onclick="alert('are you sure do you want to delete it')">delete</a></p>
+                    <p class="view"><a href="../addelete/{{i.name}}" onclick="alert('are you sure do you want to delete it')">delete</a></p>
                   
                 </div>
                 {% endfor %}
             </div>
             </div>
             </div>
-            </div>
-            <div class="footer">
-                <div class="table">
-                    <table cellpadding="10px" cellspacing="30px">
-                        <thead>
-                            <td>📚 Explore</td>
-                            <td>📞 Contact Us</td>
-                            <td>📢 Stay Connected</td>
-                            <td>📄 Legal</td>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Home</td>
-                                <td>Email: support@bookshelf.com</td>
-                                <td>📘 Facebook</td>
-                                <td>Privacy Policy</td>
-                                </tr>
-                                <tr>
-                                <td>Categories</td>
-                                <td>Phone: +1 (123) 456-7890</td>
-                                <td>🐦 Twitter</td>
-                                <td>Terms & Conditions</td>
-                                
-                                </tr>
-                                <tr>
-                                    <td>Bestsellers</td>
-                                    <td>Phone: +1 (123) 456-7890</td>
-                                    <td>📸 Instagram</td>
-                                    <td>Refund Policy</td>
-                                    </tr>
-                                    <tr>
-                                        <td>New Releases</td>
-                                        <td>Address: 123 Book Street, Library City, USA</td>
-                                        <td>🎥 YouTube</td>
-                                        <td>About Us</td>
-                                        </tr>
-                                        <tr>
-                                           
-                        </tbody>
-                    </table>
-                    
-                    <p>© 2025 BookShelf.com  All Rights Reserved.</p>
+<div class="footer">
+<div class="table">
+    <table cellpadding="10px" cellspacing="30px">
+        <thead>
+            <td>📚 Explore</td>
+            <td>📞 Contact Us</td>
+            <td>📢 Stay Connected</td>
+            <td>📄 Legal</td>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Home</td>
+                <td>Email: support@bookshelf.com</td>
+                <td>📘 Facebook</td>
+                <td>Privacy Policy</td>
+                </tr>
+                <tr>
+                <td>Categories</td>
+                <td>Phone: +1 (123) 456-7890</td>
+                <td>🐦 Twitter</td>
+                <td>Terms & Conditions</td>
                 
-                
-                    </div>
-                    <div class="bookshelf">
-                        <img src="{% static 'images/logo.png'%}" height="450px" width="450px" alt="" style="border-radius:80%;">
-                        
-                   
-                    </div>
-                    </div>
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
+                </tr>
+                <tr>
+                    <td>Bestsellers</td>
+                    <td>Phone: +1 (123) 456-7890</td>
+                    <td>📸 Instagram</td>
+                    <td>Refund Policy</td>
+                    </tr>
+                    <tr>
+                        <td>New Releases</td>
+                        <td>Address: 123 Book Street, Library City, USA</td>
+                        <td>🎥 YouTube</td>
+                        <td>About Us</td>
+                        </tr>
+                        <tr>
+                           
+        </tbody>
+    </table>
+    
+    <p>© 2025 BookShelf.com  All Rights Reserved.</p>
+
+
+    </div>
+    <div class="bookshelf">
+        <img src="{% static 'images/logo.png'%}" height="450px" width="450px" alt="" style="border-radius:80%;">
+        
+    
+    </div>
+    </div>   
     
 </body>
 </html>

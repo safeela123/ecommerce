@@ -44,17 +44,21 @@
                     </div>
                        
                         <div class="form">
-                            <form action="../adress" method="">
+                            <form action="../adress" method="POST">
                                 {% csrf_token %}
-                                <input type="text" placeholder="First Name" class="first">
-                                <input type="text" placeholder="Second Name" class="last"><br>
-                                <textarea placeholder="adress1" rows="2" cols="40" class="ad1"></textarea>
-                                <textarea placeholder="adress2" rows="2" cols="40" class="ad2"></textarea><br>
-                                <input type="text" placeholder="city" class="city">
-                                <input type="integer" placeholder="pincode" class="pin"><br>
-                                <input type="tel" placeholder="Whatsapp Number" class="wp">
-                                <input type="tel" placeholder="mobile Number" class="mb"><br>
-                                <p><a href="" class="next" style="text-decoration:none;color:black">next</a></p>
+                                
+                                <input type="text" placeholder="First Name" name="name"class="first" required>
+                                <input type="email" placeholder="Email"name="email" class="last"><br>
+                                <textarea placeholder="adress1" rows="3" name="adress"cols="40" class="ad1" required></textarea>
+                                <input type="text" placeholder="city" name="city" class="city"><br>
+                                <input type="text" placeholder="district" name="district" class="district">
+                                <input type="integer" placeholder="pincode" name="pin" class="pin" required><br>
+                                <input type="text" placeholder="state" name="state" class="state">
+                                <input type="text" placeholder="country" name="country" class="country"><br>
+                                <input type="tel" placeholder="Whatsapp Number" name="wp" class="wp" required>
+                                <input type="tel" placeholder="mobile Number" name="mobile" class="mb" required><br>
+                                <p><input type="submit" class="next" style="text-decoration:none;color:black"></p>
+                               
                                 </form>
                         </div>
                         </div>
