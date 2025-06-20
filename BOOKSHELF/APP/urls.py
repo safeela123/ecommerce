@@ -3,9 +3,9 @@ from . import views
 
 
 urlpatterns=[
-  path('',views.login),
+  path('',views.login,name='login'),
   path('register/',views.reg,name='register'),
-  path('index',views.index),
+  path('index',views.index,name='index'),
   path('adindex',views.adindex),
   path('add2/<name>',views.ad_add2),
   path('adupdate/<int:pk>',views.update),
@@ -23,8 +23,18 @@ urlpatterns=[
   path('engbiography',views.engbiography),
   path('engebook',views.engebook),
   path('adbookview',views.adview),
-  path('order',views.order),
-  path('adress',views.adress),
+  # ----order and payment------
+    path('order/<int:pk>', views.book_order_view, name='book_order'),
+  path('payment-success', views.payment_success, name='payment_success'),
+  path('adorder_view', views.order_management_view, name='admin_order_management'),
+  path('admin_orderupdate/<int:order_id>', views.update_order_status, name='update_order_status'),
+
+  # user order view
+  path('userorder_view', views.user_orders, name='user_order_view'),
+  path('orders/cancel/<int:order_id>/', views.cancel_order, name='cancel_order'),
+
+
+
   #cart
   path('addcart/<int:item_id>',views.AddCart,name='add_to_cart'),
   path('cart',views.viewcart,name='cart'),
@@ -34,11 +44,16 @@ urlpatterns=[
 
 
 # book details page
-path('bookdetails/<int:pk>',views.bookdetails),
-path('review/<int:product_id>',views.book_review,name='review')
+path('bookdetails/<int:pk>',views.bookdetails,name='bookdetails'),
+path('review/<int:product_id>',views.book_review,name='review'),
+# reset password
+path('password_reset/', views.password_reset_request, name='password_reset'),
+path('password_reset/done/', views.password_reset_done, name='password_reset_done'),
+path('reset/<uidb64>/<token>/', views.password_reset_confirm, name='password_reset_confirm'),
+path('reset/done/', views.password_reset_complete, name='password_reset_complete'),
+#  view history
 
-
-
+# path('product/<int:product_id>', views.product_detail, name='product_detail'),
   
 
 

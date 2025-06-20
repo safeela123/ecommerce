@@ -3,6 +3,19 @@ from .models import *
 from django.contrib.auth.models import User,auth
 from django.db.models import Avg
 from django.http import HttpResponse
+from django.contrib.auth import authenticate, login as auth_login
+from django.contrib import messages
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.utils.timezone import now
+import razorpay
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 # Create your views here.
 def reg(request):
     if request.method=='POST':
@@ -19,21 +32,23 @@ def reg(request):
     return render(request,'user_register.html')
 
 def login(request):
-    if request.method=='POST':
-        name=request.POST['name']
-        psw=request.POST['psw']
-        user=auth.authenticate(username=name,password=psw)
-        if user is not None:
-            if user.is_superuser:
-                auth.login(request, user)  # Log in the superuser
-                return redirect(adindex)  # Redirect to superuser index page
-            else:
-                auth.login(request, user)  # Log in the regular user
-                return redirect(index)  # Redirect to regular user index page
-        else:
-            return redirect(login)  
-    return render(request,'user_login.html')
+    if request.method == 'POST':
+        username = request.POST['name']
+        password = request.POST['psw']
+        user = authenticate(username=username, password=password)
 
+        if user is not None:
+            auth_login(request, user)
+
+            if user.is_superuser:
+                return redirect(adindex)  # Use name if it's defined in urls.py
+            else:
+                return redirect(index)    # Use name if it's defined in urls.py
+        else:
+            messages.error(request, 'Invalid username or password')
+            return redirect(login)  # Use string name, not the function itself
+
+    return render(request, 'user_login.html')
 def logout(request):
  
         if request.user.is_authenticated:
@@ -42,19 +57,115 @@ def logout(request):
         else:
             return redirect(login)
 
-def index(request):
 
+def get_rule_based_recommendations(user, top_n=5):
+    viewed_books = ViewHistory.objects.filter(user=user).values_list('product__book', flat=True)
+    ordered_books = Order.objects.filter(user=user).values_list('book', flat=True)
+    interacted_books = set(viewed_books) | set(ordered_books)
+
+    if not interacted_books:
+        return []
+
+    categories = set()
+    languages = set()
+    authors = set()
+
+    for book_id in interacted_books:
+        try:
+            book = Add.objects.get(id=book_id)
+            categories.add(book.cname)
+            languages.add(book.lname)
+
+            # Get related Add2
+            add2 = Add2.objects.filter(book=book).first()
+            if add2:
+                authors.add(add2.author)
+        except Exception as e:
+            print(f"Error loading book details: {e}")
+            continue
+
+    similar_books = Add.objects.filter(
+        cname__in=categories,
+        lname__in=languages
+    ).exclude(id__in=interacted_books)
+
+    book_scores = []
+    for book in similar_books:
+        try:
+            score = 0
+            add2 = Add2.objects.filter(book=book).first()
+
+            if add2 and add2.author in authors:
+                score += 2
+            if book.cname in categories:
+                score += 1
+            if book.lname in languages:
+                score += 1
+
+            book_scores.append((book, score))
+        except Exception as e:
+            print(f"Error scoring book: {e}")
+            continue
+
+    sorted_books = sorted(book_scores, key=lambda x: x[1], reverse=True)
+    top_books = [book for book, score in sorted_books[:top_n]]
+
+    return top_books
+
+
+
+def index(request):
     query = request.GET.get('q')
+    products = Add.objects.all()
+
     if query:
         products = Add.objects.filter(name__icontains=query)
-    else:
-        products = Add.objects.all()
-    # return render(request, 'products.html', {'products': products})
+        if request.user.is_authenticated:
+            SearchHistory.objects.create(user=request.user, query=query)
 
-        # data=Add.objects.all()
-     
-    return render(request,'user_index.html',{'data':products})
+    search_history = []
+    view_history = []
+    recommendations = []
+
+    if request.user.is_authenticated:
+        # Search history
+        search_history = SearchHistory.objects.filter(user=request.user).order_by('-searched_at')[:10]
+
+        # Clean broken view history
+        ViewHistory.objects.filter(product__isnull=True).delete()
+
+        # View history
+        view_history = ViewHistory.objects.filter(
+            user=request.user, product__isnull=False
+        ).select_related('product').order_by('-viewed_at')[:10]
+
+        # Personalized recommendations
+        recommendations = get_rule_based_recommendations(request.user)
+
+    context = {
+        'data': products,
+        'history': search_history,
+        'view_history': view_history,
+        'recommendations': recommendations,
+    }
+
+    return render(request, 'user_index.html', context)
+
     
+   
+
+# def product_detail(request, product_id):
+#     product = get_object_or_404(Add2, id=product_id)
+# # for view history
+   
+#     if request.user.is_authenticated:
+#         ViewHistory.objects.update_or_create(
+#             user=request.user,
+#             product=product,
+#             defaults={'viewed_at': now()}
+#         )
+
+#     return render(request, 'product_detail.html', {'product': product})
     # book add 1st page : add page
 
 def adindex(request):
@@ -119,14 +230,15 @@ def update(request,pk):
 
 def delete(request,name):
     Add.objects.filter(name=name).delete()
-    Add2.objects.filter(name=name).delete()
+    if   Add2.objects.filter(name=name):
+        Add2.objects.filter(name=name).delete()
     return redirect(adview)
 
 # book add second page :add2 page
 
 
 def ad_add2(request,name):  
-    data=Add.objects.all()    
+    data=Add.objects.get(name=name)    
     if request.user.is_authenticated:
        if request.method=='POST':
             author=request.POST['author']
@@ -138,7 +250,6 @@ def ad_add2(request,name):
             isbn=request.POST['isbn']
             stock=request.POST['stock']
             binding=request.POST['binding']
-            name=request.POST['name']
             book=Add.objects.get(name=name)
 
             data1=Add2.objects.create(author=author,description=description,publishdate=publishdate,
@@ -288,9 +399,182 @@ def engebook(request):
     data=Add.objects.filter(cname__cname="EBooks",lname__lname="English")
     return render(request,'eng_ebook.html',{'data':data})
 
-def order(request):
-    return render(request,'order.html')
+# ------------order ---------------
 
+client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+def book_order_view(request, pk):
+    if not request.user.is_authenticated:
+        return redirect(login)
+
+    book = get_object_or_404(Add, pk=pk)
+    quantity = int(request.GET.get('quantity', 1))
+
+    if request.method == 'POST':
+        quantity = int(request.POST.get('quantity', quantity))
+
+        # Save all user-entered data into session
+        request.session['order_data'] = {
+            'book_id': book.id,
+            'name': request.POST['name'],
+            'email': request.POST['email'],
+            'phone': request.POST['phone'],
+            'wp': request.POST['wp'],
+            'address': request.POST['address'],
+            'city': request.POST['city'],
+            'district': request.POST['district'],
+            'state': request.POST['state'],
+            'country': request.POST['country'],
+            'pincode': request.POST['pincode'],
+            'quantity': quantity
+        }
+
+        amount = int(book.price * quantity * 100)  # in paisa
+        display_amount = book.price * quantity
+
+        razorpay_order = client.order.create({
+            "amount": amount,
+            "currency": "INR",
+            "payment_capture": "1"
+        })
+
+        request.session['razorpay_order_id'] = razorpay_order['id']
+
+        return render(request, 'payment.html', {
+            'book': book,
+            'razorpay_key': settings.RAZORPAY_KEY_ID,
+            'razorpay_order_id': razorpay_order['id'],
+            'display_amount': display_amount,
+            'amount': amount,
+            'name': request.POST['name'],
+            'email': request.POST['email'],
+            'quantity': quantity
+        })
+
+    return render(request, 'order_form.html', {
+        'book':book,
+        'quantity': quantity
+    })
+
+
+@csrf_exempt
+def payment_success(request):
+    if request.method == "POST":
+        user = request.user
+        order_data = request.session.get('order_data')
+        razorpay_order_id = request.POST.get('razorpay_order_id')
+        razorpay_payment_id = request.POST.get('razorpay_payment_id')
+        razorpay_signature = request.POST.get('razorpay_signature')
+
+        if not order_data:
+            return redirect(index)
+
+        # Save address after successful payment
+        address = adress.objects.create(
+            user=user,
+            name=order_data['name'],
+            email=order_data['email'],
+            phone=order_data['phone'],
+            wp=order_data['wp'],
+            address=order_data['address'],
+            city=order_data['city'],
+            district=order_data['district'],
+            state=order_data['state'],
+            country=order_data['country'],
+            pincode=order_data['pincode']
+        )
+
+        book = get_object_or_404(Add, id=order_data['book_id'])
+
+        # Save order
+        Order.objects.create(
+            user=user,
+            book=book,
+            address=address,
+            amount=book.price * int(order_data['quantity']),
+            quantity=int(order_data['quantity']),  # ✅ New field
+            is_paid=True,
+            status='Paid',  # ✅ Set initial status
+            razorpay_order_id=razorpay_order_id,
+            razorpay_payment_id=razorpay_payment_id,
+            razorpay_signature=razorpay_signature
+            )
+        # Clear session
+        request.session.pop('order_data', None)
+        request.session.pop('razorpay_order_id', None)
+
+        return render(request, 'payment_success.html', {'book': book})
+
+    return redirect(login)
+
+# ------admin order view page -----------
+
+
+def order_management_view(request):
+    if not request.user.is_authenticated:
+        return redirect(login)
+
+    if not request.user.is_superuser:
+        return redirect('/')  # or show an error page
+
+    orders = Order.objects.all().order_by('-id')
+    return render(request, 'admin_order_management.html', {'orders': orders})
+
+def update_order_status(request, order_id):
+    if not request.user.is_authenticated:
+        return redirect(login)
+
+    if not request.user.is_superuser:
+        return redirect(login)  # or show an error page
+
+    if request.method == "POST":
+        order = get_object_or_404(Order, id=order_id)
+        new_status = request.POST.get('status')
+        if new_status:
+            order.status = new_status
+            order.save()
+    return redirect(order_management_view)
+
+# ----user order view page-------
+
+def user_orders(request):
+    if not request.user.is_authenticated:
+        return redirect(login)
+
+    orders = Order.objects.filter(user=request.user).order_by('-id')
+    return render(request, 'user_order.html', {'orders': orders})
+
+# ---------cancel order--------
+razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+def cancel_order(request, order_id):
+    if not request.user.is_authenticated:
+        return redirect(login)  # Replace with your login URL name
+
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    # Check if the order can be cancelled and is paid
+    if order.status in ['Pending', 'Paid', 'Processing'] and order.is_paid:
+        try:
+            # Razorpay expects amount in paise (1 INR = 100 paise)
+            refund = razorpay_client.payment.refund(order.razorpay_payment_id, {
+                "amount": int(order.amount * 100)
+            })
+
+            # Update order status and store refund ID
+            order.status = 'Cancelled'
+            order.refund_id = refund['id']
+            order.save()
+
+            messages.success(request, "Order cancelled and refund initiated.")
+        except razorpay.errors.BadRequestError as e:
+            messages.error(request, f"Refund failed: {str(e)}")
+        except Exception as e:
+            messages.error(request, f"An unexpected error occurred: {str(e)}")
+    else:
+        messages.error(request, "This order cannot be cancelled or is already processed.")
+
+    return redirect(user_orders)  # Replace with your actual orders page URL name
 # -----cart -------
 
 def AddCart(request,item_id):
@@ -305,13 +589,14 @@ def AddCart(request,item_id):
     if not created:
         cart_item.quantity += 1
     cart_item.save()
-    return redirect(viewcart)
+    return redirect(viewcart,id)
 
 def viewcart(request):
    
     if not request.user.is_authenticated:
         return redirect(login)
     try:
+        
         cart_items = Cartitem.objects.filter(user=request.user)
         total_price = sum(item.Total_price() for item in cart_items)
 
@@ -354,12 +639,23 @@ def update_cart_quantity(request, item_id):
     item.save()
     return redirect(viewcart)
 
-# book details page
 
 def bookdetails(request, pk):
+    # Get main book info
     product = get_object_or_404(Add, pk=pk)
-    product_details = Add2.objects.get(book=product)
+    
+    # Get detailed info from Add2 (assuming Add2 has a OneToOne or ForeignKey to Add)
+    product_details = get_object_or_404(Add2, book=product)
 
+    # Track view history
+    if request.user.is_authenticated:
+        ViewHistory.objects.update_or_create(
+            user=request.user,
+            product=product_details,  # assuming ViewHistory.product = models.ForeignKey(Add2)
+            defaults={'viewed_at': now()}
+        )
+
+    # Get all reviews
     reviews = product.reviews.all()
     average_rating = reviews.aggregate(avg=Avg('rating'))['avg']
 
@@ -371,10 +667,11 @@ def bookdetails(request, pk):
         'user_authenticated': request.user.is_authenticated,
     }
 
+    # Optional: prevent multiple reviews
     if Review.objects.filter(book_basic=product, user=request.user).exists():
         context['error'] = 'You have already submitted a review for this product.'
 
-    return render(request, 'bookdetails.html', context)  # <--- ALWAYS return a response!
+    return render(request, 'bookdetails.html', context)
 
 def book_review(request, product_id):
     product = get_object_or_404(Add, id=product_id)
@@ -441,27 +738,60 @@ def book_review(request, product_id):
         'user_authenticated': request.user.is_authenticated,
     })
 
+#------- reset password----------
 
+def password_reset_request(request):
+    if request.method == "POST":
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+            users = User.objects.filter(email=email)
+            for user in users:
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                token = default_token_generator.make_token(user)
 
+                # Build full reset URL
+                reset_url = request.build_absolute_uri(
+                    reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+                )
 
-# adress page
+                # Send email
+                subject = "Reset your password"
+                message = render_to_string("password_reset_email.html", {
+                    "user": user,
+                    "reset_url": reset_url,
+                })
 
-def adress(request):
-    user=request.user
-    if not user.is_authenticated:
-        return redirect(login)
-    if user.is_authenticated:
-        if request.method=='POST':
-            name=request.POST['name']
-            email=request.POST['email']
-            phone=request.POST['phone']
-            address=request.POST['address']
-            city=request.POST['city']
-            state=request.POST['state']
-            country=request.POST['country']
-            pincode=request.POST['pincode']
-            wp=request.POST['wp']
-            data=adress.objects.create(user=request.user,name=name,email=email,phone=phone,address=address,city=city,state=state,country=country,pincode=pincode,wp=wp)
-            data.save()
-            return redirect(order)
-    return render(request,'adress.html')
+                send_mail(subject, message, None, [user.email])
+
+            messages.success(request, "Password reset email has been sent if the email exists.")
+            return redirect("password_reset_done")
+    else:
+        form = PasswordResetForm()
+
+    return render(request, "password_reset_form.html", {"form": form})
+
+def password_reset_done(request):
+    return render(request, "password_reset_done.html")
+
+def password_reset_confirm(request, uidb64=None, token=None):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == "POST":
+            form = SetPasswordForm(user, request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect("password_reset_complete")
+        else:
+            form = SetPasswordForm(user)
+        return render(request, "password_reset_confirm.html", {"form": form, "validlink": True})
+    else:
+        return render(request, "password_reset_confirm.html", {"validlink": False})
+
+def password_reset_complete(request):
+    return render(request, "password_reset_complete.html")

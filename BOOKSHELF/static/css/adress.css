@@ -1,4 +1,4 @@
-*{
+/* *{
     margin:0px;
 }
 
@@ -71,7 +71,7 @@
     
     /* transform:translate(120px); */
    
-
+/* 
 }
 .nav2 a{
     text-decoration:none;
@@ -175,5 +175,254 @@ left:100px;
 }
 p:hover{
 box-shadow:2px green;
+} */
+/* Base reset */
+* {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: sans-serif;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+/* -------- NAVIGATION -------- */
+.nav {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    background-color: chartreuse;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+/* Logo */
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    gap: 10px;
+}
+
+/* Search bar */
+.search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search input {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #888;
+    width: 250px;
+}
+
+.search img {
+    height: 30px;
+    width: 30px;
+    background-color: yellow;
+    border-radius: 10px;
+}
+
+/* List Menu */
+.list ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+}
+
+.list a {
+    text-decoration: none;
+    color: black;
+}
+
+.list a:hover {
+    color: blueviolet;
+    transform: translateY(-2px);
+}
+
+.list img {
+    height: 25px;
+    width: 25px;
+}
+
+/* -------- SECOND NAV -------- */
+.nav2 {
+    width: 100%;
+    background-color: rgb(174, 255, 208);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.list2 {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.nav2 a {
+    text-decoration: none;
+    color: black;
+}
+
+.nav2 a:hover {
+    transform: translateY(-3px);
+    color: blueviolet;
+}
+
+/* -------- RESPONSIVE -------- */
+@media (max-width: 1024px) {
+    .nav {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .logo {
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+
+    .search {
+        flex-direction: column;
+        margin-bottom: 10px;
+    }
+
+    .search input {
+        width: 90%;
+    }
+
+    .list ul {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .search input {
+        width: 90%;
+    }
+    .list ul {
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav {
+        padding: 10px;
+    }
+
+    .logo {
+        font-size: 18px;
+    }
+
+    .search input {
+        width: 100%;
+    }
+}
+
+.form {
+    width: 80%;
+    margin: 30px auto;
+    border: 2px solid black;
+    padding: 20px;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.form form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+/* Individual Fields */
+.first,
+.last,
+.city,
+.district,
+.state,
+.country,
+.pin,
+.wp,
+.mb {
+    flex: 1 1 45%;
+    min-width: 250px;
+    height: 40px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #888;
+}
+
+.ad1 {
+    flex: 1 1 100%;
+    min-width: 100%;
+    height: auto;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    border: 1px solid #888;
+}
+
+/* Submit Button */
+.next {
+    background-color: orange;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+p:hover {
+    box-shadow: 0 0 5px green;
+}
+
+/* ---------- RESPONSIVE ONLY FOR LAP, TAB, MOBILE ---------- */
+@media (max-width: 1024px) {
+    .form {
+        width: 90%;
+    }
+
+    .form form {
+        gap: 15px;
+    }
+
+    .first,
+    .last,
+    .city,
+    .district,
+    .state,
+    .country,
+    .pin,
+    .wp,
+    .mb,
+    .ad1 {
+        flex: 1 1 100%;
+        min-width: 100%;
+    }
+
+    .next {
+        width: 100%;
+        font-size: 18px;
+    }
 }
 

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Complete Your Payment</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: #f0f2f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .payment-box {
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #2c3e50;
+      font-size: 24px;
+    }
+
+    @media (max-width: 600px) {
+      .payment-box {
+        padding: 20px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+    }
+
+    @media (min-width: 601px) and (max-width: 992px) {
+      .payment-box {
+        padding: 25px 35px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+      <div class="payment-box">
+    <h2>Complete your payment</h2>
+    <p>You're purchasing the Book: <strong>{{ book.name }}</strong></p>
+    <p>Quantity: {{ quantity }}</p>
+    <p>Price: ₹{{ display_amount|floatformat:2 }}</p>
+
+    <button id="rzp-button">Pay Now</button>
+
+    <form id="payment-form" action="{% url 'payment_success' %}" method="POST" style="display:none;">
+        {% csrf_token %}
+        <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+        <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+        <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+    </form>
+</div>
+    <script>
+        const options = {
+            "key": "{{ razorpay_key }}", // Razorpay Key ID
+            "amount": "{{ amount }}", // Amount in paise
+            "currency": "INR",
+            "name": "Bookshelf Store",
+            "description": "Book Purchase",
+            "order_id": "{{ razorpay_order_id }}",
+            "handler": function (response) {
+                // Set the hidden form fields with Razorpay response
+                document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+                document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+                document.getElementById('razorpay_signature').value = response.razorpay_signature;
+
+                // Submit the form to your success view
+                document.getElementById('payment-form').submit();
+            },
+            "prefill": {
+                "name": "{{ name }}",
+                "email": "{{ email }}"
+            },
+            "theme": {
+                "color": "#528FF0"
+            }
+        };
+
+        const rzp = new Razorpay(options);
+        document.getElementById('rzp-button').onclick = function (e) {
+            rzp.open();
+            e.preventDefault();
+        };
+    </script>
+</body>
+</html>
+

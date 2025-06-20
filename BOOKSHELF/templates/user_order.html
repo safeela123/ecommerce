@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>My Orders</title>
+    <style>
+        body {
+            background: #f7f7f7;
+            /* padding: 20px; */
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .order-card {
+            background-color: white;
+            border-left: 5px solid #4285f4;
+            margin: 15px auto;
+            padding: 20px;
+            width: 95%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .order-card strong {
+            color: #333;
+        }
+
+        .order-label {
+            font-weight: bold;
+            color: #666;
+        }
+
+        .no-orders {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 18px;
+            color: #888;
+        }
+
+        @media screen and (min-width: 600px) {
+            .order-card {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+            .order-item {
+                width: 45%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="{%static 'css/user_order.css' %}">
+
+</head>
+<body>
+       <div class="main">
+        <div class="nav">
+            <div class="logo">
+                <img src="{% static 'images/logo.png'%}" height="60px" width="60px" alt="" style="border-radius:70%;">
+                <h3>BOOKSHELF</h3>
+            </div>
+
+          
+           
+
+        <!-- <div class="search">
+            <form method="get">
+        <input type="text" name="q" list="recent-searches" placeholder="Search books..."  value="{{ request.GET.q|default:'' }}"  style="transform:translate(100px,-15px)" class="input">
+       <datalist id="recent-searches">
+  {% for entry in history %}
+    <option value="{{ entry.query }}">
+  {% endfor %}
+</datalist>
+        <button type="submit" style="background: none; border: none; cursor: pointer; margin-left:5px;transform:translate(160px,00px);border:2px solid black;padding:6px;background-color:yellow;border-radius:6px" aria-label="Search" >search</button>
+   
+</form> -->
+
+
+<div class="list">
+            <ul type="none">
+            
+                <li><a href="../index" class="page">Home</a></li>
+                {% if user.is_authenticated %}
+                <li><a href=""><img src="{% static 'images/profileicon.png' %}" ></a>
+                <li><a href="../logout">Sign Out</a></li>
+                <li><a href="{% url 'user_order_view'%}">Order</a></li>
+
+              
+                <li><a href="">Contact Us</a></li>
+                </ul>
+               
+                {% else %}
+                <li><a href="../">Sign In</a></li>
+                <li><a href="../register">Sign Up</a></li>
+                <li><a href="">Contact Us</a></li>
+                </ul>
+                {% endif %}
+        </div>
+
+        <div class="cart">
+            <p>cart</p>
+            <a href="../cart"><img src="{% static 'images/carticon.png' %}"></a>
+            
+        </div>
+    </div>
+    <div class="nav2">
+        <div class="list2">
+         
+                <a href="../mlmchild ">Children's Books</a>
+                <a href="../mlmdetective">Detective Novels </a>
+                <a href="../mlmfiction">Fiction</a>
+                <a href="../mlmbiography">Biography</a>
+                <a href="../mlmebook">EBooks</a>
+                
+    </div>
+    </div>
+    <h2>My Orders</h2>
+
+    {% if orders %}
+        {% for order in orders %}
+        <div class="order-card">
+            <div class="order-item">
+                <span class="order-label">Book:</span> <strong>{{ order.book.name }}</strong>
+            </div>
+            <div class="order-item">
+                <span class="order-label">Quantity:</span> {{ order.quantity }}
+            </div>
+            <div class="order-item">
+                <span class="order-label">Amount:</span> ₹{{ order.amount }}
+            </div>
+            <div class="order-item">
+                <span class="order-label">Status:</span> {{ order.status }}
+            </div>
+            <div class="order-item">
+                <span class="order-label">Payment ID:</span> {{ order.razorpay_payment_id }}
+            </div>
+        </div>
+        {% if order.is_cancellable %}
+<div class="order-item">
+    <form method="post" action="{% url 'cancel_order' order.id %}" style="margin-top: 10px;">
+        {% csrf_token %}
+        <button type="submit" onclick="return confirm('Are you sure you want to cancel this order?');" style="padding: 6px 12px; background-color: red; color: white; border: none; border-radius: 4px;">
+            Cancel Order
+        </button>
+    </form>
+</div>
+{% endif %}
+        {% endfor %}
+    {% else %}
+        <div class="no-orders">You haven't placed any orders yet.</div>
+    {% endif %}
+    </div>
+</body>
+</html>

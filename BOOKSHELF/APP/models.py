@@ -61,6 +61,42 @@ class adress(models.Model):
     pincode=models.IntegerField()
     wp=models.IntegerField()
     district=models.TextField()
+    def __str__(self):
+        return f"{self.name} - {self.city}"
+
+
+class Order(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Paid', 'Paid'),
+        ('Processing', 'Processing'),
+        ('Shipped', 'Shipped'),
+        ('Delivered', 'Delivered'),
+        ('Cancelled', 'Cancelled'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Add, on_delete=models.CASCADE)
+    address = models.ForeignKey(adress, on_delete=models.SET_NULL, null=True)
+    quantity = models.PositiveIntegerField(default=1)  # ✅ Added
+    amount = models.FloatField()
+    order_date = models.DateTimeField(auto_now_add=True)
+    is_paid = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')  # ✅ Added
+
+    # Razorpay
+    razorpay_order_id = models.CharField(max_length=255, blank=True, null=True)
+    razorpay_payment_id = models.CharField(max_length=255, blank=True, null=True)
+    razorpay_signature = models.CharField(max_length=255, blank=True, null=True)
+    refund_id = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"Order #{self.id} by {self.user.username}"
+    
+    def is_cancellable(self):
+        return self.status in ['Pending', 'Paid', 'Processing'] and self.is_paid
+
+
 
 
 class Cartitem(models.Model):
@@ -73,3 +109,23 @@ class Cartitem(models.Model):
     
     def __str__(self):
         return self.item.name
+    
+class SearchHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    query = models.CharField(max_length=255)
+    searched_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} searched '{self.query}'"                 
+
+class ViewHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Add2, on_delete=models.CASCADE)
+    viewed_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'product')  # prevent duplicates
+        ordering = ['-viewed_at']
+
+    def __str__(self):
+        return f"{self.user.username} viewed {self.product.name}"

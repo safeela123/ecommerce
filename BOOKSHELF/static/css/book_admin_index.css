@@ -23,9 +23,12 @@
     left:30px;
 
 }
+.list{
+    width:40%;
+}
 .list ul{
     height:80px;
-    width:300px;
+    width:100%;
     display:flex;
     justify-content:space-around;
     align-items:center;
@@ -110,7 +113,8 @@
 }
 .upload{
     margin-top:50px;
-    /* border:2px solid black; */
+    margin-left:20%;
+    margin:20%;
     height:300px;
     width:300px;
     background-color:black;
@@ -198,4 +202,138 @@ table{
 .upload h2{
     transform:translate(0px,-40px);
     text-align:center;
+}
+
+@media (max-width: 1024px) {
+    .nav, .nav2 {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+    }
+
+    .logo {
+        position: static;
+        margin-bottom: 10px;
+    }
+
+    .list ul {
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+    }
+
+    .search {
+        position: static;
+        margin: 10px 0;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .search input {
+        width: 70%;
+        left: 0;
+        top: 0;
+    }
+
+    .search img {
+        transform: none;
+        margin-top: 5px;
+    }
+
+    .list2 {
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .form {
+        position: relative;
+        top: 30px;
+        left: 0;
+        width: 90%;
+        height: auto;
+        margin: auto;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .upload {
+        width: 250px;
+        height: 250px;
+        margin-bottom: 20px;
+        margin-right:40%;
+    }
+
+    .upload img {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .upload h3 {
+        text-align: center;
+        left: 0;
+        top: 10px;
+    }
+
+    table {
+        position: static;
+        margin: 20px auto;
+        width: 100%;
+    }
+
+    .form input {
+        width: 90%;
+    }
+
+    .btn p {
+        left: 0;
+        margin: 0 auto;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .form {
+        width: 95%;
+    }
+
+    .upload {
+        width: 200px;
+        height: 200px;
+    }
+
+    .upload img {
+        height: 120px;
+        width: 120px;
+    }
+
+    .upload h3 {
+        font-size: 16px;
+    }
+
+    .btn p {
+        font-size: 16px;
+        width: 100%;
+    }
+
+    .form input {
+        width: 100%;
+    }
+}
+
+@media (min-width: 1024px) {
+    .upload{
+        /* margin-right:80%; */
+        margin-left:-30%;
+    
+    }
+    .form table{
+         margin-left:-10%;
+    }
+
+   
+  .search input{
+   margin-bottom:25px;
+  }
 }

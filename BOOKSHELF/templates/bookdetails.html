@@ -15,12 +15,6 @@
                 <h3>BOOKSHELF</h3>
             </div>
 
-          
-            <div class="cart">
-                 <p>cart</p>
-            <a href="../cart"><img src="{% static 'images/carticon.png' %}"></a>
-            
-            </div>
             <div class="search">
                 <input type="text" name="search" id="" placeholder="search">
     
@@ -31,7 +25,7 @@
            <div class="list">
             <ul type="none">
             
-                <li><a href="../index" class="page">Home</a></li>
+                <li><a href="../index">Home</a></li>
                 {% if user.is_authenticated %}
                 <li><a href=""><img src="{% static 'images/profileicon.png' %}" ></a>
                 <li><a href="../logout">Sign Out</a></li>
@@ -45,7 +39,11 @@
                 </ul>
                 {% endif %}
         </div>
-
+ <div class="cart">
+                 <p>cart</p>
+            <a href="../cart"><img src="{% static 'images/carticon.png' %}"></a>
+            
+            </div>
         </div>
         <div class="nav2">
             <div class="list2">
@@ -59,8 +57,66 @@
         </div>
         </div>
 
-        <h1>{{ product.name }}</h1><br>
-<p>{{ book_detail.description }}</p>
+    <img src="{{ product.doc.url }}" alt="" class="bookimage">
+<div class="details">
+    <table cellpadding="10" cellspacing="10">
+        <tr>
+        <td><strong></strong></td>
+        <td><h1>{{ product.name }}</h1></td>
+    </tr>
+<tr>
+    <td><strong>Author:</strong></td>
+<td>{{ product_details.author }}</td>
+</tr>
+<tr>
+    <td><strong>Category:</strong></td>
+    <td>{{ product.cname}}</td>
+</tr>
+<tr>
+    <td><strong>Language:</strong></td>
+    <td>{{ product.lname}}</td>
+</tr>
+<tr>
+    <td><strong>ISBN:</strong></td>
+    <td>{{ product_details.isbn }}</td>
+</tr>
+<tr>
+    <td><strong>Binding:</strong></td>
+    <td>{{ product_details.binding }}</td>
+</tr>
+<tr>
+    <td><strong>Publisher:</strong></td>
+    <td>{{ product_details.publisher }}</td>
+</tr>
+<tr>
+    <td><strong>No of Pages:</strong></td>
+    <td>{{ product_details.pages }}</td>
+</tr>
+<tr>
+    <td><strong>Edition:</strong></td>
+    <td>{{ product_details.edition }}</td>
+</tr>
+<tr>
+    <td><strong>Stock:</strong></td>
+    <td>{{ product_details.stock }}</td>
+</tr>
+<tr>
+    <td><strong>Description:</strong></td>
+    <td>{{ product_details.description }}</td>
+</tr>
+</table>
+
+
+</div>
+
+<a href="../order/{{product.id}}" style="border:1px solid white;padding:10px;background-color:rgb(100, 230, 100);text-decoration:none;color:white;border-radius:5px;margin-left:89px;">Buy now</a>
+
+
+
+
+<div class="review-section">
+   
+
 
 {% if average_rating %}
     <p><strong>Average Rating:</strong> {{ average_rating|floatformat:1 }}/5</p>
@@ -110,8 +166,7 @@
 </form>
 
 {% endif %}
-
-
+</div>
 
 
 </body>

@@ -1,8 +1,11 @@
 *{
     margin:0px;
 }
-
+.main{
+    min-height: 900px;
+}
 .nav{
+    left:-50px;
     height:80px;
     width:cover;
     display:flex;
@@ -23,9 +26,12 @@
     left:30px;
 
 }
+.list{
+    width:40%;
+}
 .list ul{
     height:80px;
-    width:400px;
+    width:300px;
     display:flex;
     justify-content: space-around;
     align-items:center;
@@ -42,7 +48,15 @@
     transform:translateY(-3px);
     color:blueviolet;
 }
-.search input{
+.list .page{
+    color:rgb(214, 4, 4);
+    font-weight:800;
+}
+.list img{
+    height:25px;
+    width:25px;
+} 
+.input{
     height:10px;
     width:300px;
     display:flex;
@@ -50,6 +64,7 @@
     align-items: center;
     position:relative;
     left:120px;
+    top:-500px;
     padding:10px;
     top:15px;
     border-radius:10px;
@@ -57,12 +72,34 @@
 .search img{
     height:30px;
     width:30px;
-    transform:translate(411px,-17px);
     background-color:yellow;
-    background-size: 40px,40px;
-    border-radius: 10px;
+    background-size:40px,40px;
+    border-radius:10px;
 
-}.list2{
+}
+
+.cart{
+    width:10%;
+    display:flex;
+    justify-content:center;
+    align-items: center;
+    position:absolute;
+    right:30px;
+    background-color:aqua;
+    border:2px solid black;
+
+}
+.cart img{
+    height:40px;
+    width:40px;
+}
+.cart p{
+display:flex;
+justify-content: center;
+align-items: center;
+font-size:20px;
+}
+.list2{
     height:60px;
     width:50%;
     display:flex;
@@ -88,128 +125,4 @@
 .nav2 a:hover{
    transform:translateY(-3px);
    color:blueviolet;
-    
-}
-.list2 .page{
-    color:green;
-}
-.form{
-    position:absolute;
-    top:150px;
-    left:100px;
-    height:40%;
-    width:70%;
-    /* background-color:aqua; */
-    box-shadow:2px black;
-
-}
-.first{
-    height:30px;
-    width:300px;
-    border-radius:5px;
-    border:1px solid grey;
-    margin-left:100px;
-    margin-top:50px;
-}
-.last{
-    height:30px;
-    width:300px;
-    border-radius:5px;
-    border:1px solid grey;
-    margin-left:100px;
-    margin-top:50px;
-    }
-.email{
-        height:30px;
-        width:300px;
-        border-radius:5px;
-        border:1px solid grey;
-        margin-left:100px;
-        margin-top:30px;
-        }
-
-.wp{
-        height:30px;
-        width:300px;
-        border-radius:5px;
-        border:1px solid grey;
-        margin-left:100px;
-        margin-top:30px;
-            }
-.radio{
-        /* height:30px;*/
-        width:50px; 
-        border-radius:5px;
-        border:1px solid grey;
-        margin-left:100px;
-        margin-top:10px;
-    }
-.form p{
-    position:absolute;
-    left:20px;
-    top:195px;
-    font-size:15px;
-}
-.radio1{
-        /* height:30px;*/
-        width:50px; 
-        border-radius:5px;
-        border:1px solid grey;
-        /* margin-left:100px; */
-        margin-top:10px;
-    }
-    .btn{
-        margin-top:40px;
-        margin-left:123px;
-        height:30px;
-        width:305px;
-        background-color:rgb(33, 81, 211);
-    }
-    .sub{
-        display:flex;
-        flex-direction:column;
-        height:400px;
-        width:100%;
-        position:absolute;
-        top:450px;
-        left:30px;
-    }
-    .sub1{
-        height:40px;
-        width:80%;
-        align-items:center;
-        font-size:15px;
-        border:1px solid grey;
-        
-    }
-    .sub1 a{
-        position:relative;
-        top:10px;
-        left:10px;
-    }
-    .sub2{
-        height:40px;
-        width:80%;
-        align-items:center;
-        font-size:15px;
-        border:1px solid grey;
-        margin-top:30px;
-    }
-    .sub2 a{
-        position:relative;
-        top:10px;
-        left:10px;
-    }
-    .sub3{
-        margin-top:30px;
-        height:40px;
-        width:80%;
-        align-items:center;
-        font-size:15px;
-        border:1px solid grey;
-    }
-    .sub3 a{
-        position:relative;
-        top:10px;
-        left:10px;
-    }
+}  
