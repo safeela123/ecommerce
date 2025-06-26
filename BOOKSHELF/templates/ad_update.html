@@ -50,8 +50,11 @@
                 {% csrf_token %}
                 <div class="upload">
                    
-                    <img src="{% static 'images/image_icon.png'%}" height="100px" width="100px" alt="">
-                    <h3>add your image</h3>
+                        {% if data.doc %}
+    <p>Existing file: <img src="{{ data.doc.url }}" height="200px" width="100" style="margin-left:-30%;"></p>
+{% endif %}
+              
+                
                 </div>
             <table cellspacing="10" cellpadding="10">
                 <tr>
@@ -60,8 +63,8 @@
                        
                             <th colspan="2" rowspan="2">
                                
-                    <input type="file" placeholder="select file" name="file" value="{{data.doc}}" required class="s1">
-                    </th>
+                    <input type="file" placeholder="select file" name="file"  required class="s1">
+                      </th>
                     </tr>
 
                     

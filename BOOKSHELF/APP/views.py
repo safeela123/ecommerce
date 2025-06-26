@@ -401,19 +401,31 @@ def engebook(request):
 
 # ------------order ---------------
 
-client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
 
 def book_order_view(request, pk):
     if not request.user.is_authenticated:
         return redirect(login)
 
     book = get_object_or_404(Add, pk=pk)
+    book_detail = get_object_or_404(Add2, book=book)
     quantity = int(request.GET.get('quantity', 1))
+
+    # Stock check (GET)
+    if book_detail.stock < quantity:
+        messages.error(request, f"Only {book_detail.stock} copies available.")
+        return redirect('book_detail', pk=pk)
 
     if request.method == 'POST':
         quantity = int(request.POST.get('quantity', quantity))
 
-        # Save all user-entered data into session
+        # Stock check (POST)
+        if book_detail.stock < quantity:
+            messages.error(request, f"Only {book_detail.stock} copies available.")
+            return redirect('book_detail', pk=pk)
+
+        # Save user order data to session
         request.session['order_data'] = {
             'book_id': book.id,
             'name': request.POST['name'],
@@ -429,10 +441,10 @@ def book_order_view(request, pk):
             'quantity': quantity
         }
 
-        amount = int(book.price * quantity * 100)  # in paisa
+        amount = int(book.price * quantity * 100)
         display_amount = book.price * quantity
 
-        razorpay_order = client.order.create({
+        razorpay_order = razorpay_client.order.create({
             "amount": amount,
             "currency": "INR",
             "payment_capture": "1"
@@ -452,7 +464,7 @@ def book_order_view(request, pk):
         })
 
     return render(request, 'order_form.html', {
-        'book':book,
+        'book': book,
         'quantity': quantity
     })
 
@@ -469,7 +481,17 @@ def payment_success(request):
         if not order_data:
             return redirect(index)
 
-        # Save address after successful payment
+        # Get book and book detail
+        book = get_object_or_404(Add, id=order_data['book_id'])
+        book_detail = get_object_or_404(Add2, book=book)
+        quantity = int(order_data['quantity'])
+
+        # Check stock again before saving
+        if book_detail.stock < quantity:
+            messages.error(request, "Insufficient stock. Please try again.")
+            return redirect('index')
+
+        # Save address
         address = adress.objects.create(
             user=user,
             name=order_data['name'],
@@ -484,21 +506,24 @@ def payment_success(request):
             pincode=order_data['pincode']
         )
 
-        book = get_object_or_404(Add, id=order_data['book_id'])
-
         # Save order
         Order.objects.create(
             user=user,
             book=book,
             address=address,
-            amount=book.price * int(order_data['quantity']),
-            quantity=int(order_data['quantity']),  # ✅ New field
+            quantity=quantity,
+            amount=book.price * quantity,
             is_paid=True,
-            status='Paid',  # ✅ Set initial status
+            status='Paid',
             razorpay_order_id=razorpay_order_id,
             razorpay_payment_id=razorpay_payment_id,
             razorpay_signature=razorpay_signature
-            )
+        )
+
+        # ✅ Reduce stock
+        book_detail.stock -= quantity
+        book_detail.save()
+
         # Clear session
         request.session.pop('order_data', None)
         request.session.pop('razorpay_order_id', None)
@@ -507,25 +532,19 @@ def payment_success(request):
 
     return redirect(login)
 
-# ------admin order view page -----------
-
 
 def order_management_view(request):
     if not request.user.is_authenticated:
         return redirect(login)
-
     if not request.user.is_superuser:
-        return redirect('/')  # or show an error page
-
+        return redirect('/')
     orders = Order.objects.all().order_by('-id')
     return render(request, 'admin_order_management.html', {'orders': orders})
 
-def update_order_status(request, order_id):
-    if not request.user.is_authenticated:
-        return redirect(login)
 
-    if not request.user.is_superuser:
-        return redirect(login)  # or show an error page
+def update_order_status(request, order_id):
+    if not request.user.is_authenticated or not request.user.is_superuser:
+        return redirect(login)
 
     if request.method == "POST":
         order = get_object_or_404(Order, id=order_id)
@@ -535,7 +554,6 @@ def update_order_status(request, order_id):
             order.save()
     return redirect(order_management_view)
 
-# ----user order view page-------
 
 def user_orders(request):
     if not request.user.is_authenticated:
@@ -544,27 +562,27 @@ def user_orders(request):
     orders = Order.objects.filter(user=request.user).order_by('-id')
     return render(request, 'user_order.html', {'orders': orders})
 
-# ---------cancel order--------
-razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
 def cancel_order(request, order_id):
     if not request.user.is_authenticated:
-        return redirect(login)  # Replace with your login URL name
+        return redirect(login)
 
     order = get_object_or_404(Order, id=order_id, user=request.user)
 
-    # Check if the order can be cancelled and is paid
     if order.status in ['Pending', 'Paid', 'Processing'] and order.is_paid:
         try:
-            # Razorpay expects amount in paise (1 INR = 100 paise)
             refund = razorpay_client.payment.refund(order.razorpay_payment_id, {
                 "amount": int(order.amount * 100)
             })
 
-            # Update order status and store refund ID
             order.status = 'Cancelled'
             order.refund_id = refund['id']
             order.save()
+
+            # ✅ Restore stock
+            book_detail = get_object_or_404(Add2, book=order.book)
+            book_detail.stock += order.quantity
+            book_detail.save()
 
             messages.success(request, "Order cancelled and refund initiated.")
         except razorpay.errors.BadRequestError as e:
@@ -574,7 +592,8 @@ def cancel_order(request, order_id):
     else:
         messages.error(request, "This order cannot be cancelled or is already processed.")
 
-    return redirect(user_orders)  # Replace with your actual orders page URL name
+    return redirect(user_orders)
+
 # -----cart -------
 
 def AddCart(request,item_id):
@@ -589,7 +608,7 @@ def AddCart(request,item_id):
     if not created:
         cart_item.quantity += 1
     cart_item.save()
-    return redirect(viewcart,id)
+    return redirect(viewcart)
 
 def viewcart(request):
    

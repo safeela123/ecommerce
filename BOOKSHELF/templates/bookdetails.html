@@ -18,7 +18,7 @@
             <div class="search">
                 <input type="text" name="search" id="" placeholder="search">
     
-                <img src="https://img.icons8.com/?size=100&id=aBNtkpYvycsP&format=png&color=000000" height="20px" width="20px" alt="">
+                <!-- <img src="https://img.icons8.com/?size=100&id=aBNtkpYvycsP&format=png&color=000000" height="20px" width="20px" alt=""> -->
         </div>
 
         
@@ -56,117 +56,78 @@
                     
         </div>
         </div>
-
+<div class="book-container">
     <img src="{{ product.doc.url }}" alt="" class="bookimage">
-<div class="details">
-    <table cellpadding="10" cellspacing="10">
-        <tr>
-        <td><strong></strong></td>
-        <td><h1>{{ product.name }}</h1></td>
-    </tr>
-<tr>
-    <td><strong>Author:</strong></td>
-<td>{{ product_details.author }}</td>
-</tr>
-<tr>
-    <td><strong>Category:</strong></td>
-    <td>{{ product.cname}}</td>
-</tr>
-<tr>
-    <td><strong>Language:</strong></td>
-    <td>{{ product.lname}}</td>
-</tr>
-<tr>
-    <td><strong>ISBN:</strong></td>
-    <td>{{ product_details.isbn }}</td>
-</tr>
-<tr>
-    <td><strong>Binding:</strong></td>
-    <td>{{ product_details.binding }}</td>
-</tr>
-<tr>
-    <td><strong>Publisher:</strong></td>
-    <td>{{ product_details.publisher }}</td>
-</tr>
-<tr>
-    <td><strong>No of Pages:</strong></td>
-    <td>{{ product_details.pages }}</td>
-</tr>
-<tr>
-    <td><strong>Edition:</strong></td>
-    <td>{{ product_details.edition }}</td>
-</tr>
-<tr>
-    <td><strong>Stock:</strong></td>
-    <td>{{ product_details.stock }}</td>
-</tr>
-<tr>
-    <td><strong>Description:</strong></td>
-    <td>{{ product_details.description }}</td>
-</tr>
-</table>
 
+    <div class="details">
+        <table>
+            <tr>
+                <td colspan="2"><h1>{{ product.name }}</h1></td>
+            </tr>
+            <tr><td>Author:</td><td>{{ product_details.author }}</td></tr>
+            <tr><td>Category:</td><td>{{ product.cname }}</td></tr>
+            <tr><td>Language:</td><td>{{ product.lname }}</td></tr>
+            <tr><td>ISBN:</td><td>{{ product_details.isbn }}</td></tr>
+            <tr><td>Binding:</td><td>{{ product_details.binding }}</td></tr>
+            <tr><td>Publisher:</td><td>{{ product_details.publisher }}</td></tr>
+            <tr><td>No of Pages:</td><td>{{ product_details.pages }}</td></tr>
+            <tr><td>Edition:</td><td>{{ product_details.edition }}</td></tr>
+            <tr><td>Stock:</td><td>{{ product_details.stock }}</td></tr>
+            <tr><td>Description:</td><td>{{ product_details.description }}</td></tr>
+        </table>
 
+        <a href="../order/{{product.id}}" style="text-decoration:none;border:1px solid black;border-radius:5px;background-color:rgb(71, 155, 71);padding:10px;color:white;" class="buy-now-btn">Buy Now</a>
+    </div>
 </div>
 
-<a href="../order/{{product.id}}" style="border:1px solid white;padding:10px;background-color:rgb(100, 230, 100);text-decoration:none;color:white;border-radius:5px;margin-left:89px;">Buy now</a>
 
 
 
 
 <div class="review-section">
-   
 
+    {% if average_rating %}
+        <p><strong>Average Rating:</strong> {{ average_rating|floatformat:1 }}/5</p>
+    {% else %}
+        <p><strong>Average Rating:</strong> Not rated yet.</p>
+    {% endif %}
 
-{% if average_rating %}
-    <p><strong>Average Rating:</strong> {{ average_rating|floatformat:1 }}/5</p>
-{% else %}
-    <p><strong>Average Rating:</strong> Not rated yet.</p>
-{% endif %}
+    <h2>Reviews:</h2>
+    {% if reviews %}
+        <ul>
+            {% for i in reviews %}
+                <li>
+                    ⭐ {{ i.rating }}/5 by <strong>{{ i.user.username }}</strong><br>
+                    "{{ i.comment }}"<br>
+                    <small>{{ i.created_at }}</small>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No reviews yet.</p>
+    {% endif %}
 
-<h2>Reviews:</h2>
-{% if reviews %}
-    <ul>
-        {% for i in reviews %}
-            <li>
-                ⭐ {{ i.rating }}/5 by <strong>{{ i.user.username }}</strong><br>
-                "{{ i.comment }}"<br>
-                <small>{{ i.created_at }}</small>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No reviews yet.</p>
-{% endif %}
+    {% if user.is_authenticated %}
+    <form action="{% url 'review' product.id %}" method="POST">
+        {% csrf_token %}
+        <h2>Rate {{ product.name }}</h2>
 
-
-
-{% if user.is_authenticated %}
-<form action="{% url 'review' product.id %}" method="POST">
-
-  {% csrf_token %}
-
-
- <h1>Rate {{ product.name }}</h1>
-
-
- 
- <div class="star-rating">
+        <div class="star-rating">
             <input type="radio" id="star5" name="stars" value="5"><label for="star5">★</label>
             <input type="radio" id="star4" name="stars" value="4"><label for="star4">★</label>
             <input type="radio" id="star3" name="stars" value="3"><label for="star3">★</label>
             <input type="radio" id="star2" name="stars" value="2"><label for="star2">★</label>
             <input type="radio" id="star1" name="stars" value="1"><label for="star1">★</label>
         </div>
- <label for="comment">Leave a comment:</label><br>
-    <textarea id="comment" name="comment" rows="4" cols="40" placeholder="Write your comment here..."></textarea>
 
-        <br><br>
+        <label for="comment">Leave a comment:</label>
+        <textarea id="comment" name="comment" rows="4" placeholder="Write your comment here..."></textarea>
+
         <button type="submit">Submit Rating</button>
-</form>
-
-{% endif %}
+    </form>
+    {% endif %}
 </div>
+
 
 
 </body>

@@ -190,6 +190,13 @@ h2{
     gap: 20px;
     background-color: #fdfdfd;
     box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    height:200px;
+    box-shadow: 2px 2px 15px 5px rgba(0,0,0,0.12);
+}
+.details{
+  display:flex;
+  justify-content: space-evenly;
+  width:80%;
 }
 .name {
     flex: 1 1 100%;
@@ -198,6 +205,7 @@ h2{
     color: rgba(44, 27, 59, 0.842);
     font-family: 'Times New Roman', Times, serif;
     text-align: center;
+    margin-bottom:40px;
 }
 .product img {
     width: 100px;
@@ -237,10 +245,11 @@ width:80px;
 .count {
     flex: 1 1 100%;
     display: flex;
-    justify-content: center;
+    /* justify-content: flex-end; */
     align-items: center;
-    margin-top: 15px;
+    margin-top: 24%;
     gap: 10px;
+    margin-left:90%;
 }
 .quantity_box {
     width: 60px;
@@ -428,8 +437,11 @@ margin-top:-4px;
   }
 
   .count {
+    display:flex;
+    flex-direction:column;
     position: static;
-    margin-top: 10px;
+    margin-top: 50%;
+    margin-left:-10%;
   }
 
   .quantity_box {

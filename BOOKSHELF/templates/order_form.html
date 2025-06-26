@@ -50,27 +50,42 @@
             </div>
         </div>
 
-        <div class="form">
-            <form method="POST" action="{% url 'book_order' book.pk %}">
-                {% csrf_token %}
-                
-                <input type="text" placeholder="Full Name" name="name" class="first" required>
-                <input type="email" placeholder="Email" name="email" class="last" required><br>
+      <div class="form">
+    <h2 style="text-align:center;">Order Form for "{{ book.title }}"</h2>
 
-                <textarea placeholder="Address" rows="3" name="address" cols="40" class="ad1" required></textarea>
-                <input type="text" placeholder="City" name="city" class="city" required><br>
-                <input type="text" placeholder="District" name="district" class="district" required>
-                <input type="text" placeholder="Pincode" name="pincode" class="pin" required><br>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 
-                <input type="text" placeholder="State" name="state" class="state" required>
-                <input type="text" placeholder="Country" name="country" class="country" required><br>
+    <form method="POST" action="{% url 'book_order' book.pk %}">
+        {% csrf_token %}
 
-                <input type="tel" placeholder="Whatsapp Number" name="wp" class="wp" required>
-                <input type="tel" placeholder="Phone Number" name="phone" class="mb" required><br>
-                <input type="hidden" name="quantity" value="{{ quantity }}">
+        <input type="text" placeholder="Full Name" name="name" class="first" required>
+        <input type="email" placeholder="Email" name="email" class="last" required><br>
 
-                <p><input type="submit" class="next" value="Proceed to Payment"></p>
-            </form>
+        <textarea placeholder="Address" rows="3" name="address" cols="40" class="ad1" required></textarea>
+        <input type="text" placeholder="City" name="city" class="city" required><br>
+        <input type="text" placeholder="District" name="district" class="district" required>
+        <input type="text" placeholder="Pincode" name="pincode" class="pin" required><br>
+
+        <input type="text" placeholder="State" name="state" class="state" required>
+        <input type="text" placeholder="Country" name="country" class="country" required><br>
+
+        <input type="tel" placeholder="Whatsapp Number" name="wp" class="wp" required>
+        <input type="tel" placeholder="Phone Number" name="phone" class="mb" required><br>
+
+        <input type="hidden" name="quantity" value="{{ quantity }}">
+        <!-- If editable -->
+        <!-- <input type="number" name="quantity" min="1" value="{{ quantity }}" required> -->
+
+        <p><input type="submit" class="next" value="Proceed to Payment"></p>
+    </form>
+</div>
+
         </div>
     </div>
 </body>

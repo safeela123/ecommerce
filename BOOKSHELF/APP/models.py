@@ -31,7 +31,7 @@ class Add2(models.Model):
     pages=models.IntegerField()
     isbn=models.IntegerField()
     binding=models.TextField()
-    stock=models.TextField(default='in stock')
+    stock=models.IntegerField(default='in stock')
     book = models.ForeignKey(Add, null=True, blank=True, on_delete=models.CASCADE)
 
 
