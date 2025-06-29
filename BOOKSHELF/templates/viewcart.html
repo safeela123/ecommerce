@@ -102,7 +102,12 @@
          </div>
         {% endfor %}
     </ul>
+    <div class="buyall">
     <p class="total"><strong>Total:</strong> ₹{{ total_price }}Rs</p>
+    <form method="GET" action="{% url 'order_all' %}">
+    <button type="submit" style="padding:8px;margin-top:-4%;width:100px;background-color:orange;">Buy All</button>
+</form>
+</div>
 {% else %}
 <div class="empty">
 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfh9odvam9gncuRE3NXLiyaR1LTroFm4RRAQ&s" height="300px" width="400px" alt="empty cart" >

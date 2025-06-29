@@ -6,11 +6,157 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Order Management</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            padding: 30px;
-        }
+       * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body, .main {
+    width: 100%;
+    overflow-x: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+}
+
+/* ------------------ MAIN ------------------ */
+.main {
+    min-height: 900px;
+}
+
+/* ------------------ NAVIGATION ------------------ */
+.nav {
+    width: 100%;
+    background-color: chartreuse;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    gap: 10px;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    font-family: Cambria, Georgia, Times, 'Times New Roman', serif;
+    display: flex;
+    align-items: center;
+}
+
+.list ul {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+.list a {
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+    font-size: 16px;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.list a:hover {
+    transform: translateY(-2px);
+    color: blueviolet;
+}
+
+.list .page {
+    color: black;
+    font-weight: 800;
+}
+
+.list img {
+    height: 22px;
+    width: 22px;
+}
+
+/* ------------------ SEARCH ------------------ */
+.search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.search input {
+    width: 230px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.search input:focus {
+    border-color: blueviolet;
+    outline: none;
+}
+
+.search img {
+    height: 28px;
+    width: 28px;
+    border-radius: 8px;
+    background-color: yellow;
+    cursor: pointer;
+}
+
+/* ------------------ CART ------------------ */
+.cart {
+    display: flex;
+    align-items: center;
+    background-color: aqua;
+    padding: 5px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    gap: 8px;
+    font-size: 16px;
+}
+
+.cart img {
+    height: 28px;
+    width: 28px;
+}
+
+/* ------------------ SECOND NAV ------------------ */
+.nav2 {
+    width: 100%;
+    background-color: rgb(174, 255, 208);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 10px 0;
+    gap: 20px;
+}
+
+.nav2 a {
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+    font-size: 15px;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.nav2 a:hover {
+    transform: translateY(-2px);
+    color: blueviolet;
+}
+
+.list2 {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 10px 0;
+}
 
         h2 {
             margin-bottom: 20px;
@@ -75,16 +221,108 @@
             cursor: pointer;
         }
 
+        .table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+    border-radius: 6px;
+}
+
+.table-container table {
+    min-width: 600px; /* Adjust based on your column count */
+}
+
         button:hover {
             background-color: #002c60;
         }
+        @media (max-width: 1024px) {
+    .nav, .nav2 {
+        flex-direction: column;
+        align-items: center;
+    }
+    .list ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+    }
+    .search input {
+        width: 80%;
+    }
+    .cart {
+        width: 100%;
+        justify-content: center;
+    }
+    .logo {
+        margin-top: 10px;
+    }
+}
+@media (max-width: 768px) {
+    .list ul, .list2, .nav, .nav2, .search {
+        flex-direction: column;
+        align-items: center;
+    }
+    .search input {
+        width: 90%;
+    }
+    .cart {
+        width: 100%;
+        justify-content: center;
+        margin: 10px 0;
+    }
+    .logo {
+        margin-bottom: 10px;
+    }
+}
     </style>
 </head>
 <body>
+       <div class="main">
+        <div class="nav">
+            <div class="logo">
+                <img src="{% static 'images/logo.png'%}" height="60px" width="60px" alt="" style="border-radius:70%;">
+                <h3>BOOKSHELF</h3>
+            </div>
+
+          
+
+            <div class="search">
+                <input type="text" name="search" id="" placeholder="search">
+    
+                <!-- <img src="https://img.icons8.com/?size=100&id=aBNtkpYvycsP&format=png&color=000000" height="20px" width="20px" alt=""> -->
+        </div>
+
+          <div class="list">
+                <ul type="none">
+                    <li><a href="{% url 'admin_order_management'%}" class="page">Order View</a></li>
+                    <li><a href="../adindex">Home</a></li>
+                    <li><a href="../adbookview">Product View</a></li>
+                    <li><a href="{% url 'stock_dashboard'%}">stock dashboard</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="../logout">Sign Out</a></li>
+                    </ul>
+                    {% endif %}
+            </div></div>
+        <!-- <div class="nav2">
+            <div class="list2">
+                <select>
+                    <option selected>Select Language</option>
+                    <option value="English">English</option>
+                    <option value="Malayalam">Malayalam</option>
+                    </select>
+        
+                    <a href="../admlmchild">Children's Books</a>
+                    <a href="../admlmdetective">Detective Novels </a>
+                    <a href="../admlmfiction">Fiction</a>
+                    <a href="../admlmbiography">Biography</a>
+                    <a href="../admlmebook">EBooks</a>
+                    
+        </div></div> -->
+
 
     <h2>Order Management Dashboard</h2>
 
     {% if orders %}
+    <div class="table-container">
     <table>
         <thead>
             <tr>
@@ -126,9 +364,10 @@
             {% endfor %}
         </tbody>
     </table>
+    </div>
     {% else %}
     <p>No orders found.</p>
     {% endif %}
-
+</div>
 </body>
 </html>

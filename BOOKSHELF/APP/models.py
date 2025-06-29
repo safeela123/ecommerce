@@ -31,7 +31,7 @@ class Add2(models.Model):
     pages=models.IntegerField()
     isbn=models.IntegerField()
     binding=models.TextField()
-    stock=models.IntegerField(default='in stock')
+    stock=models.IntegerField(default=1)
     book = models.ForeignKey(Add, null=True, blank=True, on_delete=models.CASCADE)
 
 
@@ -50,19 +50,22 @@ class Review(models.Model):
         unique_together = ('book_basic', 'user')
 
 class adress(models.Model):
-    user=models.ForeignKey(User,on_delete=models.CASCADE)
-    name=models.TextField()
-    email=models.EmailField()
-    phone=models.IntegerField()
-    address=models.TextField()
-    city=models.TextField()
-    state=models.TextField()
-    country=models.TextField()
-    pincode=models.IntegerField()
-    wp=models.IntegerField()
-    district=models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.TextField()
+    email = models.EmailField()
+    phone = models.IntegerField()
+    wp = models.IntegerField()
+    address = models.TextField()
+    city = models.TextField()
+    district = models.TextField()
+    state = models.TextField()
+    country = models.TextField()
+    pincode = models.IntegerField()
+    is_default = models.BooleanField(default=False)  # <- Add this field
+
     def __str__(self):
         return f"{self.name} - {self.city}"
+
 
 
 class Order(models.Model):

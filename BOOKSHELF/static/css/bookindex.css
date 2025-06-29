@@ -57,9 +57,9 @@ html, body {
 }
 
 .search-btn {
-    background-color: yellow;
-    border: 2px solid black;
-    padding: 6px 12px;
+    background-color: rgb(202, 253, 253);
+    border: 1px solid black;
+    padding: 2px 12px;
     border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
@@ -76,17 +76,21 @@ html, body {
     flex-wrap: wrap;
     list-style: none;
     align-items: center;
+     text-align:center;
+     margin-top:4%;
 }
 
 .list a {
     text-decoration: none;
     color: black;
-    font-size: 14px;
+    font-size: 15px;
+    font-weight:500;
+   
 }
 
 .list a.page {
     font-weight: 800;
-    color: rgb(214, 4, 4);
+    color:black;
 }
 
 .cart {
@@ -109,6 +113,9 @@ html, body {
 
 .cart p {
     font-size: 16px;
+    margin-top:5%;
+    font-size:18px;
+    text-align:center;
 }
 
 /* NAV2 styling */
@@ -138,14 +145,30 @@ html, body {
 /* Upload section */
 .upload {
     display: grid;
-    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 30px;
     padding: 30px;
     width: 100%;
     box-sizing: border-box;
     margin-top: 20px;
+    justify-content: center;
+    align-items: start;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
+/* Make single book 30% width */
+.upload:has(.output:nth-child(1):nth-last-child(1)) {
+    grid-template-columns: 30%;
+    justify-content: center;
+}
+
+.upload:has(.output:nth-child(2):nth-last-child(1)) {
+    grid-template-columns: repeat(2, 30%);
+    justify-content: center;
+}
+/* Individual book card */
 .output {
     border: 1px solid #ddd;
     border-radius: 10px;
@@ -184,6 +207,34 @@ html, body {
     color: red;
     font-weight: 900;
 }
+.filter-form select {
+    padding: 6px 10px;              /* Reduced padding */
+    font-size: 14px;                /* Slightly smaller text */
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #333;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1); /* Softer shadow */
+}
+
+.filter-form select:hover {
+    border-color: #6a5acd;
+    box-shadow: 0 2px 6px rgba(106, 90, 205, 0.15);
+}
+
+.filter-form select:focus {
+    border-color: #6a5acd;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(106, 90, 205, 0.2);
+}
+
+.filter-form label {
+    font-size: 14px;
+    margin-right: 5px;
+}
+
 
 .view {
     height: 30px;
@@ -282,28 +333,29 @@ html, body {
     gap: 20px;
 }
 
-.table {
+.footertable {
     flex: 2;
     min-width: 280px;
 }
 
-.table table {
+.footertable table {
     width: 100%;
     border-collapse: collapse;
+    background-color:black;
 }
 
-.table thead td {
+.footertable thead td {
     font-weight: bold;
     padding-bottom: 15px;
     font-size: 18px;
 }
 
-.table td {
+.footertable td {
     padding: 8px 10px;
     font-size: 15px;
 }
 
-.table p {
+.footertable p {
     margin-top: 20px;
     text-align: center;
     font-size: 14px;
@@ -329,8 +381,13 @@ html, body {
     .upload {
         grid-template-columns: repeat(3, minmax(150px, 1fr));
     }
+    
 }
-
+@media (min-width:769px) and (max-width:900px){
+    .cart p{
+        margin-top:3%;
+    }
+}
 @media (max-width: 768px) {
     .nav {
         flex-direction: column;
@@ -370,6 +427,9 @@ html, body {
         margin-top: 10px;
         width: 100%;
         justify-content: flex-start;
+    }
+    .cart p{
+        margin-top:3%;
     }
 
     .nav2 {
@@ -416,7 +476,7 @@ html, body {
         font-size: 16px;
     }
 
-    .table td, .table thead td {
+    .footertable td, .table thead td {
         font-size: 12px;
         padding: 6px;
     }
@@ -428,5 +488,20 @@ html, body {
 
     .bookshelf img {
         width: 150px;
+    }
+
+      .filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-form label,
+    .filter-form select {
+        width: 100%;
+        text-align: left;
+    }
+
+    .filter-form select {
+        font-size: 14px;
     }
 }

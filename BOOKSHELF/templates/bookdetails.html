@@ -27,9 +27,10 @@
             
                 <li><a href="../index">Home</a></li>
                 {% if user.is_authenticated %}
-                <li><a href=""><img src="{% static 'images/profileicon.png' %}" ></a>
+                <li><a href="{% url 'user_order_view' %}">Orders</a></li>
+                <li><a href="{% url 'profile' %}"><img src="{% static 'images/profileicon.png' %}"></a></li>
                 <li><a href="../logout">Sign Out</a></li>
-                <li><a href="">Contact Us</a></li>
+                
                 </ul>
                
                 {% else %}
@@ -45,7 +46,7 @@
             
             </div>
         </div>
-        <div class="nav2">
+        <!-- <div class="nav2">
             <div class="list2">
              
                     <a href="../mlmchild " >Children's Books</a>
@@ -55,7 +56,7 @@
                     <a href="../mlmebook">EBooks</a>
                     
         </div>
-        </div>
+        </div> -->
 <div class="book-container">
     <img src="{{ product.doc.url }}" alt="" class="bookimage">
 
@@ -74,9 +75,20 @@
             <tr><td>Edition:</td><td>{{ product_details.edition }}</td></tr>
             <tr><td>Stock:</td><td>{{ product_details.stock }}</td></tr>
             <tr><td>Description:</td><td>{{ product_details.description }}</td></tr>
-        </table>
 
-        <a href="../order/{{product.id}}" style="text-decoration:none;border:1px solid black;border-radius:5px;background-color:rgb(71, 155, 71);padding:10px;color:white;" class="buy-now-btn">Buy Now</a>
+            {% if messages %}
+    {% for message in messages %}
+        <div class="alert">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+        </table>
+{% if product_details.stock > 0 %}
+        <a href="../order/{{product.id}}" style="text-decoration:none;border:1px solid black;border-radius:5px;background-color:rgb(71, 155, 71);padding:10px;color:white;margin-top:2%;width:90px;" class="buy-now-btn">Buy Now</a>
+{% else %}
+    <button type="button" disabled style="border:1px solid black;border-radius:5px;background-color:rgb(71, 155, 71);padding:10px;color:white;margin-top:2%;width:110px;text-align:center; cursor: not-allowed;" class="buy-now-btn">
+        Out of Stock
+    </button>
+{% endif %}
     </div>
 </div>
 

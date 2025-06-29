@@ -235,13 +235,22 @@ h2{
 height:25px;
 width:80px;
 }
-.total{
+/* .total{
     position:bottom;
     margin-top:40px;
     margin-left:23%;
     font-size:20px;
-}
+} */
+.buyall{
+    position:bottom;
+    margin-top:40px;
+    margin-left:23%;
+    font-size:20px;
 
+  display:flex;
+  justify-content: space-evenly;
+  width:250px;
+}
 .count {
     flex: 1 1 100%;
     display: flex;

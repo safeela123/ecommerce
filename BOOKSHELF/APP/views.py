@@ -16,6 +16,7 @@ from django.utils.timezone import now
 import razorpay
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+from django.core.paginator import Paginator
 # Create your views here.
 def reg(request):
     if request.method=='POST':
@@ -41,7 +42,7 @@ def login(request):
             auth_login(request, user)
 
             if user.is_superuser:
-                return redirect(adindex)  # Use name if it's defined in urls.py
+                return redirect('stock_dashboard')  # Use name if it's defined in urls.py
             else:
                 return redirect(index)    # Use name if it's defined in urls.py
         else:
@@ -113,60 +114,56 @@ def get_rule_based_recommendations(user, top_n=5):
     return top_books
 
 
-
 def index(request):
     query = request.GET.get('q')
-    products = Add.objects.all()
+    category_id = request.GET.get('category')
+    language_id = request.GET.get('language')
 
+    # Start with all books
+    books = Add.objects.all()
+
+    # Apply search
     if query:
-        products = Add.objects.filter(name__icontains=query)
+        books = books.filter(name__icontains=query)
         if request.user.is_authenticated:
             SearchHistory.objects.create(user=request.user, query=query)
+
+    # Apply category filter
+    if category_id:
+        books = books.filter(cname_id=category_id)
+
+    # Apply language filter
+    if language_id:
+        books = books.filter(lname_id=language_id)
+
+    # Extra data for dropdowns and recommendations
+    categories = Category.objects.all()
+    languages = Language.objects.all()
 
     search_history = []
     view_history = []
     recommendations = []
 
     if request.user.is_authenticated:
-        # Search history
         search_history = SearchHistory.objects.filter(user=request.user).order_by('-searched_at')[:10]
-
-        # Clean broken view history
         ViewHistory.objects.filter(product__isnull=True).delete()
-
-        # View history
-        view_history = ViewHistory.objects.filter(
-            user=request.user, product__isnull=False
-        ).select_related('product').order_by('-viewed_at')[:10]
-
-        # Personalized recommendations
+        view_history = ViewHistory.objects.filter(user=request.user, product__isnull=False).select_related('product').order_by('-viewed_at')[:10]
         recommendations = get_rule_based_recommendations(request.user)
 
     context = {
-        'data': products,
+        'books': books,
+        'categories': categories,
+        'languages': languages,
+        'selected_category': int(category_id) if category_id else None,
+        'selected_language': int(language_id) if language_id else None,
         'history': search_history,
         'view_history': view_history,
         'recommendations': recommendations,
+        'search_query': query,
     }
 
     return render(request, 'user_index.html', context)
 
-    
-   
-
-# def product_detail(request, product_id):
-#     product = get_object_or_404(Add2, id=product_id)
-# # for view history
-   
-#     if request.user.is_authenticated:
-#         ViewHistory.objects.update_or_create(
-#             user=request.user,
-#             product=product,
-#             defaults={'viewed_at': now()}
-#         )
-
-#     return render(request, 'product_detail.html', {'product': product})
-    # book add 1st page : add page
 
 def adindex(request):
     lnames=Language.objects.all()
@@ -402,8 +399,8 @@ def engebook(request):
 # ------------order ---------------
 
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-
-
+ # adjust import if needed
+# ----------------single buy --------------------
 def book_order_view(request, pk):
     if not request.user.is_authenticated:
         return redirect(login)
@@ -412,33 +409,55 @@ def book_order_view(request, pk):
     book_detail = get_object_or_404(Add2, book=book)
     quantity = int(request.GET.get('quantity', 1))
 
-    # Stock check (GET)
+    addresses = adress.objects.filter(user=request.user)
+
+    # Stock check on GET
     if book_detail.stock < quantity:
         messages.error(request, f"Only {book_detail.stock} copies available.")
-        return redirect('book_detail', pk=pk)
+        return redirect('bookdetails', pk=pk)
 
     if request.method == 'POST':
         quantity = int(request.POST.get('quantity', quantity))
 
-        # Stock check (POST)
+        # Stock check on POST
         if book_detail.stock < quantity:
             messages.error(request, f"Only {book_detail.stock} copies available.")
             return redirect('book_detail', pk=pk)
 
-        # Save user order data to session
+        selected_address_id = request.POST.get('selected_address')
+        if selected_address_id:
+            selected_address = adress.objects.get(id=selected_address_id, user=request.user)
+            address_data = {
+                'name': selected_address.name,
+                'email': selected_address.email,
+                'phone': selected_address.phone,
+                'wp': selected_address.wp,
+                'address': selected_address.address,
+                'city': selected_address.city,
+                'district': selected_address.district,
+                'state': selected_address.state,
+                'country': selected_address.country,
+                'pincode': selected_address.pincode,
+            }
+        else:
+            # fallback if manual entry
+            address_data = {
+                'name': request.POST['name'],
+                'email': request.POST['email'],
+                'phone': request.POST['phone'],
+                'wp': request.POST['wp'],
+                'address': request.POST['address'],
+                'city': request.POST['city'],
+                'district': request.POST['district'],
+                'state': request.POST['state'],
+                'country': request.POST['country'],
+                'pincode': request.POST['pincode'],
+            }
+
         request.session['order_data'] = {
             'book_id': book.id,
-            'name': request.POST['name'],
-            'email': request.POST['email'],
-            'phone': request.POST['phone'],
-            'wp': request.POST['wp'],
-            'address': request.POST['address'],
-            'city': request.POST['city'],
-            'district': request.POST['district'],
-            'state': request.POST['state'],
-            'country': request.POST['country'],
-            'pincode': request.POST['pincode'],
-            'quantity': quantity
+            'quantity': quantity,
+            **address_data,
         }
 
         amount = int(book.price * quantity * 100)
@@ -458,41 +477,120 @@ def book_order_view(request, pk):
             'razorpay_order_id': razorpay_order['id'],
             'display_amount': display_amount,
             'amount': amount,
-            'name': request.POST['name'],
-            'email': request.POST['email'],
+            'name': address_data['name'],
+            'email': address_data['email'],
             'quantity': quantity
         })
 
     return render(request, 'order_form.html', {
         'book': book,
-        'quantity': quantity
+        'quantity': quantity,
+        'addresses': addresses
     })
+# -------------- cart all buy -------------------
+def order_all_view(request):
+    if not request.user.is_authenticated:
+        return redirect(login)
 
+    cart_items = Cartitem.objects.filter(user=request.user)
+    if not cart_items.exists():
+        messages.error(request, "Your cart is empty.")
+        return redirect('cart')
+
+    if request.method == 'POST':
+        # --- Handle Address ---
+        selected_address_id = request.POST.get('selected_address')
+        if selected_address_id:
+            selected_address = adress.objects.get(id=selected_address_id, user=request.user)
+            address_data = {
+                'name': selected_address.name,
+                'email': selected_address.email,
+                'phone': selected_address.phone,
+                'wp': selected_address.wp,
+                'address': selected_address.address,
+                'city': selected_address.city,
+                'district': selected_address.district,
+                'state': selected_address.state,
+                'country': selected_address.country,
+                'pincode': selected_address.pincode,
+            }
+        else:
+            address_data = {
+                'name': request.POST['name'],
+                'email': request.POST['email'],
+                'phone': request.POST['phone'],
+                'wp': request.POST['wp'],
+                'address': request.POST['address'],
+                'city': request.POST['city'],
+                'district': request.POST['district'],
+                'state': request.POST['state'],
+                'country': request.POST['country'],
+                'pincode': request.POST['pincode'],
+            }
+
+        # --- Prepare Cart Items ---
+        order_items = []
+        total_amount = 0
+        for item in cart_items:
+            order_items.append({'book_id': item.item.id, 'quantity': item.quantity})
+            total_amount += item.Total_price()
+
+        # --- Create Razorpay Order ---
+        amount_in_paise = int(total_amount * 100)
+        razorpay_order = razorpay_client.order.create({
+            "amount": amount_in_paise,
+            "currency": "INR",
+            "payment_capture": "1"
+        })
+
+        # --- Save to session for post-payment processing ---
+        request.session['pending_order'] = {
+            'mode': 'cart',
+            'order_id': razorpay_order['id'],
+            'items': order_items,
+            'amount': total_amount,
+            **address_data
+        }
+
+        return render(request, 'payment.html', {
+            'razorpay_key': settings.RAZORPAY_KEY_ID,
+            'razorpay_order_id': razorpay_order['id'],
+            'amount': amount_in_paise,
+            'display_amount': total_amount,
+            'user': request.user
+        })
+
+    # GET request — show address form
+    addresses = adress.objects.filter(user=request.user)
+    return render(request, 'order_form_all.html', {
+        'addresses': addresses,
+        'cart_items': cart_items
+    }
+    )
 
 @csrf_exempt
 def payment_success(request):
-    if request.method == "POST":
-        user = request.user
-        order_data = request.session.get('order_data')
-        razorpay_order_id = request.POST.get('razorpay_order_id')
-        razorpay_payment_id = request.POST.get('razorpay_payment_id')
-        razorpay_signature = request.POST.get('razorpay_signature')
+    if request.method != "POST":
+        return redirect('index')
 
-        if not order_data:
-            return redirect(index)
+    user = request.user
+    razorpay_order_id = request.POST.get('razorpay_order_id')
+    razorpay_payment_id = request.POST.get('razorpay_payment_id')
+    razorpay_signature = request.POST.get('razorpay_signature')
 
-        # Get book and book detail
+    # --- SINGLE BOOK PURCHASE ---
+    if 'order_data' in request.session:
+        order_data = request.session.pop('order_data')
+
         book = get_object_or_404(Add, id=order_data['book_id'])
         book_detail = get_object_or_404(Add2, book=book)
         quantity = int(order_data['quantity'])
 
-        # Check stock again before saving
         if book_detail.stock < quantity:
-            messages.error(request, "Insufficient stock. Please try again.")
+            messages.error(request, "Insufficient stock.")
             return redirect('index')
 
-        # Save address
-        address = adress.objects.create(
+        address, created = adress.objects.get_or_create(
             user=user,
             name=order_data['name'],
             email=order_data['email'],
@@ -503,10 +601,10 @@ def payment_success(request):
             district=order_data['district'],
             state=order_data['state'],
             country=order_data['country'],
-            pincode=order_data['pincode']
-        )
+            pincode=order_data['pincode'],
+)
+        
 
-        # Save order
         Order.objects.create(
             user=user,
             book=book,
@@ -520,17 +618,68 @@ def payment_success(request):
             razorpay_signature=razorpay_signature
         )
 
-        # ✅ Reduce stock
         book_detail.stock -= quantity
         book_detail.save()
 
-        # Clear session
-        request.session.pop('order_data', None)
         request.session.pop('razorpay_order_id', None)
 
         return render(request, 'payment_success.html', {'book': book})
 
-    return redirect(login)
+    # --- CART PURCHASE ---
+    elif 'pending_order' in request.session:
+        order_data = request.session.pop('pending_order')
+
+        address,created = adress.objects.get_or_create(
+            user=user,
+            name=order_data['name'],
+            email=order_data['email'],
+            phone=order_data['phone'],
+            wp=order_data['wp'],
+            address=order_data['address'],
+            city=order_data['city'],
+            district=order_data['district'],
+            state=order_data['state'],
+            country=order_data['country'],
+            pincode=order_data['pincode'],
+)
+
+        ordered_books = []
+
+        for item in order_data['items']:
+            book = get_object_or_404(Add, id=item['book_id'])
+            book_detail = get_object_or_404(Add2, book=book)
+            quantity = item['quantity']
+
+            if book_detail.stock < quantity:
+                continue  # Skip out-of-stock books
+
+            Order.objects.create(
+                user=user,
+                book=book,
+                address=address,
+                quantity=quantity,
+                amount=book.price * quantity,
+                is_paid=True,
+                status='Paid',
+                razorpay_order_id=razorpay_order_id,
+                razorpay_payment_id=razorpay_payment_id,
+                razorpay_signature=razorpay_signature
+            )
+
+            book_detail.stock -= quantity
+            book_detail.save()
+            ordered_books.append(book)
+
+        Cartitem.objects.filter(user=user).delete()
+
+        return render(request, 'payment_success.html', {'ordered_books': ordered_books})
+
+    # --- SESSION MISSING ---
+    else:
+        messages.error(request, "Order session missing or expired.")
+        return redirect('cart')
+
+
 
 
 def order_management_view(request):
@@ -814,3 +963,102 @@ def password_reset_confirm(request, uidb64=None, token=None):
 
 def password_reset_complete(request):
     return render(request, "password_reset_complete.html")
+
+# --------------    admin stock management dashboard--------------
+
+def stock_dashboard(request):
+    query = request.GET.get('q', '')
+    selected_category = request.GET.get('category', '')
+    selected_language = request.GET.get('language', '')
+
+    books = Add2.objects.select_related('book', 'book__cname', 'book__lname').all()
+
+    if query:
+        books = books.filter(book__name__icontains=query)
+    if selected_category:
+        books = books.filter(book__cname__id=selected_category)
+    if selected_language:
+        books = books.filter(book__lname__id=selected_language)
+
+    paginator = Paginator(books, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    categories = Category.objects.all()
+    languages = Language.objects.all()
+
+    context = {
+        'page_obj': page_obj,
+        'categories': categories,
+        'languages': languages,
+        'query': query,
+        'selected_category': selected_category,
+        'selected_language': selected_language,
+    }
+    return render(request, 'stock_dashboard.html', context)
+
+# ---------------------profile ------------------
+
+def profile_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login')  # Replace with your actual login route name
+    addresses = adress.objects.filter(user=request.user)
+    return render(request, 'profile.html', {'addresses': addresses})
+
+def add_address(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if request.method == 'POST':
+        _, created = adress.objects.get_or_create(
+            user=request.user,
+            name=request.POST['name'],
+            email=request.POST['email'],
+            phone=request.POST['phone'],
+            wp=request.POST['wp'],
+            address=request.POST['address'],
+            city=request.POST['city'],
+            district=request.POST['district'],
+            state=request.POST['state'],
+            country=request.POST['country'],
+            pincode=request.POST['pincode']
+        )
+
+    return redirect('profile')
+
+def update_address(request, id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    try:
+        addr = adress.objects.get(id=id, user=request.user)
+    except adress.DoesNotExist:
+        return redirect('profile')
+    
+    if request.method == 'POST':
+        addr.name = request.POST['name']
+        addr.email = request.POST['email']
+        addr.phone = request.POST['phone']
+        addr.wp = request.POST['wp']
+        addr.address = request.POST['address']
+        addr.city = request.POST['city']
+        addr.district = request.POST['district']
+        addr.state = request.POST['state']
+        addr.country = request.POST['country']
+        addr.pincode = request.POST['pincode']
+        addr.save()
+    return redirect('profile')
+
+def delete_address(request, id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    adress.objects.filter(id=id, user=request.user).delete()
+    return redirect('profile')
+
+
+
+def set_default_address(request, id):
+    if not request.user.is_authenticated:
+        return HttpResponse("Unauthorized", status=401)
+    adress.objects.filter(user=request.user).update(is_default=False)
+    adress.objects.filter(id=id, user=request.user).update(is_default=True)
+    return HttpResponse("Updated")

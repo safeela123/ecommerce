@@ -1,46 +1,43 @@
-<!-- templates/order_form.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     {% load static %}
     <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Order Book</title>
     <link rel="stylesheet" href="{% static 'css/adress.css' %}">
 </head>
 <body>
     <div class="main">
+
+        <!-- NAVIGATION -->
         <div class="nav">
             <div class="logo">
                 <img src="{% static 'images/logo.png' %}" height="60px" width="60px" alt="" style="border-radius:70%;">
                 <h3>BOOKSHELF</h3>
             </div>
-            <!-- <div class="cart"></div> -->
             <div class="search">
-                <input type="text" name="search" placeholder="search">
+                <input type="text" name="search" placeholder="Search">
                 <img src="https://img.icons8.com/?size=100&id=aBNtkpYvycsP&format=png&color=000000" height="20px" width="20px" alt="">
             </div>
-             <div class="list">
-            <ul type="none">
-            
-                <li><a href="../index">Home</a></li>
-                {% if user.is_authenticated %}
-                <li><a href=""><img src="{% static 'images/profileicon.png' %}" ></a>
-                <li><a href="../logout">Sign Out</a></li>
-                <li><a href="">Contact Us</a></li>
-               
-               
-                {% else %}
-                <li><a href="../">Sign In</a></li>
-                <li><a href="../register">Sign Up</a></li>
-                <li><a href="">Contact Us</a></li>
-               
-                {% endif %}
-                 </ul>
-        </div>
+            <div class="list">
+                <ul>
+                    <li><a href="../index">Home</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href=""><img src="{% static 'images/profileicon.png' %}"></a></li>
+                        <li><a href="../logout">Sign Out</a></li>
+                        <li><a href="">Contact Us</a></li>
+                    {% else %}
+                        <li><a href="../">Sign In</a></li>
+                        <li><a href="../register">Sign Up</a></li>
+                        <li><a href="">Contact Us</a></li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
 
-        <div class="nav2">
+        <!-- SUB NAVIGATION -->
+        <!-- <div class="nav2">
             <div class="list2">
                 <a href="/mlmchild">Children's Books</a>
                 <a href="/mlmdetective">Detective Novels</a>
@@ -48,45 +45,59 @@
                 <a href="/mlmbiography">Biography</a>
                 <a href="/mlmebook">EBooks</a>
             </div>
-        </div>
+        </div> -->
 
-      <div class="form">
-    <h2 style="text-align:center;">Order Form for "{{ book.title }}"</h2>
+        <!-- ORDER FORM -->
+        <div class="form">
+            <h2>Order Form for "{{ book.name }}"</h2>
 
-    {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        <li class="{{ message.tags }}">{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
 
-    <form method="POST" action="{% url 'book_order' book.pk %}">
-        {% csrf_token %}
+            <form method="POST" action="{% url 'book_order' book.pk %}">
+                {% csrf_token %}
 
-        <input type="text" placeholder="Full Name" name="name" class="first" required>
-        <input type="email" placeholder="Email" name="email" class="last" required><br>
+                <h3>Select Saved Address</h3>
+                {% if addresses %}
+                    {% for addr in addresses %}
+                    <div class="address-block">
+                        <label>
+                            <input type="radio" name="selected_address" value="{{ addr.id }}">
+                            <strong>{{ addr.name }}</strong> – {{ addr.email }}<br>
+                            {{ addr.address }}, {{ addr.city }}, {{ addr.district }}, {{ addr.state }}<br>
+                            {{ addr.country }} - {{ addr.pincode }}<br>
+                            Phone: {{ addr.phone }}, WhatsApp: {{ addr.wp }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                    <hr>
+                    <h4>Or enter a new address:</h4>
+                {% else %}
+                    <p>No saved addresses found. Please enter a new one below.</p>
+                {% endif %}
 
-        <textarea placeholder="Address" rows="3" name="address" cols="40" class="ad1" required></textarea>
-        <input type="text" placeholder="City" name="city" class="city" required><br>
-        <input type="text" placeholder="District" name="district" class="district" required>
-        <input type="text" placeholder="Pincode" name="pincode" class="pin" required><br>
+                <input type="text" placeholder="Full Name" name="name" class="first">
+                <input type="email" placeholder="Email" name="email" class="last">
+                <textarea placeholder="Address" rows="3" name="address" class="ad1"></textarea>
+                <input type="text" placeholder="City" name="city" class="city">
+                <input type="text" placeholder="District" name="district" class="district">
+                <input type="text" placeholder="Pincode" name="pincode" class="pin">
+                <input type="text" placeholder="State" name="state" class="state">
+                <input type="text" placeholder="Country" name="country" class="country">
+                <input type="tel" placeholder="Whatsapp Number" name="wp" class="wp">
+                <input type="tel" placeholder="Phone Number" name="phone" class="mb">
 
-        <input type="text" placeholder="State" name="state" class="state" required>
-        <input type="text" placeholder="Country" name="country" class="country" required><br>
-
-        <input type="tel" placeholder="Whatsapp Number" name="wp" class="wp" required>
-        <input type="tel" placeholder="Phone Number" name="phone" class="mb" required><br>
-
-        <input type="hidden" name="quantity" value="{{ quantity }}">
-        <!-- If editable -->
-        <!-- <input type="number" name="quantity" min="1" value="{{ quantity }}" required> -->
-
-        <p><input type="submit" class="next" value="Proceed to Payment"></p>
-    </form>
-</div>
-
+                <input type="hidden" name="quantity" value="{{ quantity }}">
+                <p><input type="submit" class="next" value="Proceed to Payment"></p>
+            </form>
         </div>
     </div>
 </body>
 </html>
+
+

@@ -43,6 +43,17 @@
       color: #444;
     }
 
+    ul {
+      text-align: left;
+      margin: 15px 0;
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
     button {
       padding: 12px 20px;
       font-size: 16px;
@@ -96,10 +107,21 @@
 </head>
 <body>
   <div class="payment-box">
-    <h2>Complete your payment</h2>
-    <p>You're purchasing the Book: <strong>{{ book.name }}</strong></p>
-    <p>Quantity: {{ quantity }}</p>
-    <p>Price: ₹{{ display_amount|floatformat:2 }}</p>
+    <h2>Complete Your Payment</h2>
+
+    {% if book %}
+      <p>You're purchasing the Book: <strong>{{ book.name }}</strong></p>
+      <p>Quantity: {{ quantity }}</p>
+    {% elif cart_items %}
+      <h3>Your Cart Items:</h3>
+      <ul>
+        {% for item in cart_items %}
+          <li>{{ item.item.name }} – {{ item.quantity }} × ₹{{ item.item.price }} = ₹{{ item.Total_price }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <p><strong>Total:</strong> ₹{{ display_amount|floatformat:2 }}</p>
 
     <button id="rzp-button">Pay Now</button>
     <p id="processing-msg">Processing payment, please wait...</p>
@@ -111,7 +133,7 @@
       <input type="hidden" name="razorpay_signature" id="razorpay_signature">
     </form>
 
-    <a href="{% url 'book_order' book.pk %}" class="back-link">← Modify Order</a>
+    <a href="{% if book %}{% url 'book_order' book.pk %}{% else %}{% url 'cart' %}{% endif %}" class="back-link">← Modify Order</a>
   </div>
 
   <script>
@@ -123,15 +145,10 @@
       "description": "Book Purchase",
       "order_id": "{{ razorpay_order_id }}",
       "handler": function (response) {
-        // Show processing message
         document.getElementById('processing-msg').style.display = 'block';
-
-        // Populate hidden fields
         document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
         document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
         document.getElementById('razorpay_signature').value = response.razorpay_signature;
-
-        // Submit the form
         document.getElementById('payment-form').submit();
       },
       "prefill": {
@@ -156,4 +173,3 @@
   </script>
 </body>
 </html>
-

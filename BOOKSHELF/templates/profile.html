@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>My Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+}
+
+/* NAVIGATION */
+.nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    background-color: chartreuse;
+    padding: 10px 20px;
+    gap: 15px;
+    width: 100%;
+}
+
+.nav > div {
+    flex: 1 1 auto;
+    min-width: 180px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo h3 {
+    font-size: 22px;
+    word-break: break-word;
+}
+
+.search {
+    flex: 2;
+}
+
+.search form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 180px;
+    height: 30px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    padding: 0 10px;
+}
+
+.search-btn {
+    background-color: lightblue;
+    border: 2px solid black;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.search-btn:hover {
+    background-color: #ffeb3b;
+}
+
+.list ul {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    list-style: none;
+    align-items: center;
+}
+
+.list a {
+    text-decoration: none;
+    color: black;
+    font-size: 14px;
+}
+
+.list a.page {
+    font-weight: 800;
+}
+
+.cart {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    flex-shrink: 0;
+    height: 50px;
+    width: 60px;
+    border: 1px solid black;
+    background-color: aqua;
+}
+
+.cart img, .list img {
+    height: 30px;
+    width: 30px;
+}
+
+.cart p {
+    font-size: 16px;
+}
+
+/* NAV2 */
+.nav2 {
+    background-color: rgb(174, 255, 208);
+    padding: 10px;
+    text-align: center;
+}
+
+.list2 {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.nav2 a {
+    text-decoration: none;
+    color: black;
+    transition: 0.2s;
+}
+
+.nav2 a:hover {
+    color: blueviolet;
+    transform: translateY(-2px);
+}
+
+/* MAIN CONTAINER */
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #ccc;
+}
+
+h2, h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* ADDRESS LIST */
+.address-list {
+    padding: 0;
+}
+
+.address-list li {
+    margin: 15px 0;
+    padding: 15px;
+    background: #f2f2f2;
+    border-radius: 6px;
+    list-style: none;
+    line-height: 1.5;
+}
+
+.address-list input[type="radio"] {
+    margin-right: 10px;
+}
+
+/* ACTION BUTTONS */
+.action-buttons {
+    margin-top: 10px;
+}
+
+.action-buttons button {
+    margin-right: 10px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background: #4CAF50;
+    color: white;
+    transition: 0.3s;
+}
+
+.action-buttons button:hover {
+    background: #388e3c;
+}
+
+.delete {
+    background-color: #1976d2;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+.delete:hover {
+    background-color: #125ea5;
+}
+
+/* FORM */
+.address-form input,
+.address-form button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.address-form input:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 3px #1976d2;
+}
+
+/* MODAL */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 10;
+    overflow-y: auto;
+}
+
+.modal-content {
+    background: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 28px;
+    cursor: pointer;
+    color: #333;
+}
+
+@media (max-width: 600px) {
+    .nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .search form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .list ul {
+        justify-content: center;
+    }
+
+    .list2 {
+        gap: 10px;
+    }
+
+    .cart {
+        width: 100%;
+    }
+
+    .address-form input,
+    .address-form button {
+        font-size: 16px;
+    }
+}
+</style>
+</head>
+<body>
+     <div class="main">
+        <div class="nav">
+            <div class="logo">
+                <img src="{% static 'images/logo.png'%}" height="60px" width="60px" alt="" style="border-radius:70%;">
+                <h3>BOOKSHELF</h3>
+            </div>
+
+          
+           
+
+        <div class="search">
+        <form method="get" action="../index" style="display: flex; align-items: center;">
+        <input type="text" name="q" list="recent-searches" placeholder="Search books..."  value="{{ request.GET.q|default:'' }}"   class="search-input">
+       <datalist id="recent-searches">
+  {% for entry in history %}
+    <option value="{{ entry.query }}">
+  {% endfor %}
+</datalist>
+        <button type="submit"  aria-label="Search" class="search-btn">search</button>
+    </form>
+
+
+</div>
+<div class="list">
+            <ul type="none">
+            
+                <li><a href="../index" >Home</a></li>
+                {% if user.is_authenticated %}
+                <li><a href="{% url 'profile'%}" class="page"><img src="{% static 'images/profileicon.png' %}" ></a>
+                <li><a href="../logout">Sign Out</a></li>
+                <li><a href="">Contact Us</a></li>
+                <li><a href="{% url 'user_order_view'%}">Orders</a></li>
+
+                </ul>
+               
+                {% else %}
+                <li><a href="../">Sign In</a></li>
+                <li><a href="../register">Sign Up</a></li>
+                <li><a href="">Contact Us</a></li>
+                </ul>
+                {% endif %}
+                </div>
+             
+       
+
+        <div class="cart">
+            <p>cart</p>
+            <a href="../cart"><img src="{% static 'images/carticon.png' %}"></a>
+             </div>
+                </div>
+        
+    
+    <div class="nav2">
+        <div class="list2">
+         
+                <a href="../mlmchild ">Children's Books</a>
+                <a href="../mlmdetective">Detective Novels </a>
+                <a href="../mlmfiction">Fiction</a>
+                <a href="../mlmbiography">Biography</a>
+                <a href="../mlmebook">EBooks</a>
+                
+    </div>
+    </div>
+<div class="container">
+    <h2>My Profile</h2>
+
+    <h3>Saved Addresses</h3>
+    <ul class="address-list">
+        {% for addr in addresses %}
+        <li>
+            <label>
+                <input type="radio" name="default_address" {% if addr.is_default %}checked{% endif %}
+                       onchange="setDefaultAddress('{{ addr.id }}')">
+                <strong>{{ addr.name }}</strong> - {{ addr.email }}<br>
+                Phone: {{ addr.phone }} | WhatsApp: {{ addr.wp }}<br>
+                {{ addr.address }}, {{ addr.city }}, {{ addr.district }}, {{ addr.state }}, {{ addr.country }} - {{ addr.pincode }}
+            </label>
+            <div class="action-buttons">
+                <button onclick="openEditModal('{{ addr.id }}', '{{ addr.name }}', '{{ addr.email }}', '{{ addr.phone }}', '{{ addr.wp }}', '{{ addr.address }}', '{{ addr.city }}', '{{ addr.district }}', '{{ addr.state }}', '{{ addr.country }}', '{{ addr.pincode }}')">Edit</button>
+                <form method="POST" action="{% url 'delete_address' addr.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="delete" onclick="return confirm('Delete this address?')">Delete</button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h3>Add New Address</h3>
+    <form method="POST" action="{% url 'add_address' %}" class="address-form">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="Full Name" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="number" name="phone" placeholder="Phone" required>
+        <input type="number" name="wp" placeholder="WhatsApp Number" required>
+        <input type="text" name="address" placeholder="Address" required>
+        <input type="text" name="city" placeholder="City" required>
+        <input type="text" name="district" placeholder="District" required>
+        <input type="text" name="state" placeholder="State" required>
+        <input type="text" name="country" placeholder="Country" required>
+        <input type="number" name="pincode" placeholder="Pincode" required>
+        <button type="submit">Add Address</button>
+    </form>
+</div>
+
+<!-- Edit Address Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="document.getElementById('editModal').style.display='none'">&times;</span>
+        <h3>Edit Address</h3>
+        <form method="POST" id="editForm" class="address-form">
+            {% csrf_token %}
+            <input type="text" name="name" id="edit_name" required>
+            <input type="email" name="email" id="edit_email" required>
+            <input type="number" name="phone" id="edit_phone" required>
+            <input type="number" name="wp" id="edit_wp" required>
+            <input type="text" name="address" id="edit_address" required>
+            <input type="text" name="city" id="edit_city" required>
+            <input type="text" name="district" id="edit_district" required>
+            <input type="text" name="state" id="edit_state" required>
+            <input type="text" name="country" id="edit_country" required>
+            <input type="number" name="pincode" id="edit_pincode" required>
+            <button type="submit">Update</button>
+        </form>
+    </div>
+</div>
+</div>
+<script>
+function openEditModal(id, name, email, phone, wp, address, city, district, state, country, pincode) {
+    document.getElementById('editModal').style.display = 'block';
+    document.getElementById('edit_name').value = name;
+    document.getElementById('edit_email').value = email;
+    document.getElementById('edit_phone').value = phone;
+    document.getElementById('edit_wp').value = wp;
+    document.getElementById('edit_address').value = address;
+    document.getElementById('edit_city').value = city;
+    document.getElementById('edit_district').value = district;
+    document.getElementById('edit_state').value = state;
+    document.getElementById('edit_country').value = country;
+    document.getElementById('edit_pincode').value = pincode;
+    document.getElementById('editForm').action = `/update-address/${id}/`;
+}
+
+function setDefaultAddress(id) {
+    fetch(`/set-default-address/${id}/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+    }).then(() => location.reload());
+}
+</script>
+</body>
+</html>

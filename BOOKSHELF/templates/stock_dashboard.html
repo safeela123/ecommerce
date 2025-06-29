@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+        }
+
+        .main {
+            padding-bottom: 40px;
+            width: 100%;
+        }
+
+        /* ================= NAVBAR ================= */
+        .nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: chartreuse;
+        }
+
+       .nav > div {
+    margin: 5px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+
+        .logo {
+            gap: 10px;
+        }
+
+        .logo img {
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+        }
+
+        .logo h3 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .search input {
+            width: 100%;
+            max-width: 300px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .list ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .list a {
+            text-decoration: none;
+            color: black;
+            font-weight: 600;
+            font-size: 16px;
+            transition: color 0.2s ease;
+        }
+
+        .list a:hover {
+            color: blueviolet;
+        }
+
+        .list .page {
+            font-weight: 800;
+        }
+
+        /* =============== NAV2 =============== */
+        .nav2 {
+            width: 100%;
+            background-color: rgb(174, 255, 208);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 10px 0;
+            gap: 20px;
+        }
+
+        .list2 {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .list2 a {
+            text-decoration: none;
+            color: black;
+            font-weight: 500;
+        }
+
+        /* =============== DASHBOARD CONTENT =============== */
+        h2 {
+            text-align: center;
+            margin: 25px 0 10px;
+        }
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            padding: 0 10px;
+            margin-bottom: 20px;
+        }
+
+        input, select, button {
+            padding: 8px;
+            font-size: 14px;
+            min-width: 180px;
+        }
+
+        /* =============== TABLE =============== */
+        .table-wrapper {
+            overflow-x: auto;
+            padding: 0 10px;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            min-width: 700px;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ccc;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: #333;
+            color: white;
+        }
+
+        tr.low-stock {
+            background-color: #ffe6e6;
+        }
+
+        tr.in-stock {
+            background-color: #e6ffe6;
+        }
+
+        /* =============== PAGINATION =============== */
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .pagination a {
+            margin: 0 5px;
+            text-decoration: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+        }
+
+        .pagination span {
+            font-weight: bold;
+        }
+
+        /* =============== UPDATE LINK STYLE =============== */
+        .view a {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .view a:hover {
+            background-color: #388e3c;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* =============== MEDIA QUERIES =============== */
+      @media (min-width: 768px) {
+    .nav {
+        display:flex;
+        flex-wrap: nowrap;
+    }
+    .logo{
+        flex:1;
+    }
+    .logo, .search, .list {
+        
+        justify-content: flex-start;
+    }
+
+    .search {
+        flex:1;
+        justify-content: center;
+    }
+
+    .list {
+        flex:2;
+        justify-content: flex-end;
+    }
+}
+    </style>
+</head>
+<body>
+<div class="main">
+
+    <!-- NAVBAR -->
+    <div class="nav">
+        <div class="logo">
+            <img src="{% static 'images/logo.png' %}" alt="Logo">
+            <h3>BOOKSHELF</h3>
+        </div>
+
+        <div class="search">
+            <input type="text" name="search" placeholder="Search">
+        </div>
+
+        <div class="list">
+            <ul>
+                <li><a href="{% url 'admin_order_management' %}" >Order View</a></li>
+                <li><a href="../adindex">Home</a></li>
+                <li><a href="../adbookview">Product View</a></li>
+                <li><a href="{% url 'stock_dashboard' %}" class="page">Stock Dashboard</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="../logout">Sign Out</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECOND NAV -->
+    <!-- <div class="nav2">
+        <div class="list2">
+            <select>
+                <option selected>Select Language</option>
+                <option value="English">English</option>
+                <option value="Malayalam">Malayalam</option>
+            </select>
+            <a href="../admlmchild">Children's Books</a>
+            <a href="../admlmdetective">Detective Novels</a>
+            <a href="../admlmfiction">Fiction</a>
+            <a href="../admlmbiography">Biography</a>
+            <a href="../admlmebook">EBooks</a>
+        </div>
+    </div> -->
+
+    <!-- STOCK DASHBOARD -->
+    <h2>Book Stock Dashboard</h2>
+
+    <form method="get">
+        <input type="text" name="q" placeholder="Search by title..." value="{{ query }}">
+        <select name="category">
+            <option value="">All Categories</option>
+            {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.cname }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="language">
+            <option value="">All Languages</option>
+            {% for lang in languages %}
+                <option value="{{ lang.id }}" {% if selected_language == lang.id|stringformat:"s" %}selected{% endif %}>{{ lang.lname }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Filter</button>
+    </form>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Edition</th>
+                    <th>Publisher</th>
+                    <th>Stock</th>
+                    <th>Status / Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in page_obj %}
+                <tr class="{% if b.stock <= 5 %}low-stock{% else %}in-stock{% endif %}">
+                    <td>{{ b.book.name }}</td>
+                    <td>{{ b.author }}</td>
+                    <td>{{ b.edition }}</td>
+                    <td>{{ b.publisher }}</td>
+                    <td>{{ b.stock }}</td>
+                    <td>
+                        {% if b.stock <= 5 %}
+                            <span style="color:red;">Low Stock</span>
+                        {% else %}
+                            In Stock
+                        {% endif %}
+                        <br>
+                        <p class="view">
+                            <a href="../adupdate/{{ b.book.pk }}">Update</a>
+                        </p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?q={{ query }}&category={{ selected_category }}&language={{ selected_language }}&page={{ page_obj.previous_page_number }}">⟨ Prev</a>
+        {% endif %}
+
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+            <a href="?q={{ query }}&category={{ selected_category }}&language={{ selected_language }}&page={{ page_obj.next_page_number }}">Next ⟩</a>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>
+
+

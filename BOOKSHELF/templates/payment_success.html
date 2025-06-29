@@ -7,44 +7,91 @@
     <link rel="stylesheet" href="{% static 'css/payment_success.css' %}">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f0fdf4;
             text-align: center;
-            padding: 50px;
+            padding: 40px 20px;
         }
+
         .success-box {
             background-color: #ffffff;
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            display: inline-block;
+            max-width: 600px;
+            margin: auto;
         }
+
         h1 {
             color: #22c55e;
+            margin-bottom: 20px;
         }
-        .btn-home {
+
+        .book-list {
+            text-align: left;
             margin-top: 20px;
-            padding: 10px 20px;
+        }
+
+        .book-list ul {
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .book-list li {
+            background: #f6fdf9;
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border-left: 5px solid #22c55e;
+            border-radius: 5px;
+        }
+
+        .btn-home {
+            margin-top: 30px;
+            padding: 12px 25px;
             background-color: #22c55e;
             color: white;
             text-decoration: none;
             border-radius: 5px;
+            display: inline-block;
         }
+
         .btn-home:hover {
             background-color: #16a34a;
+        }
+
+        @media (max-width: 600px) {
+            .success-box {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="success-box">
-        <h1>🎉 Payment Successful!</h1>
-        <p>Thank you for your order.</p>
-        <p><strong>{{ book.title }}</strong> has been successfully ordered.</p>
-        <p>Your payment was received and your order is now being processed.</p>
-        <a class="btn-home" href="../index">Back to Home</a>
-    </div>
+<div class="success-box">
+    <h1>🎉 Payment Successful!</h1>
 
+    {% if book %}
+        <p>Thank you for purchasing <strong>{{ book.name }}</strong>!</p>
+        <p>Your payment has been received and the order is being processed.</p>
+
+    {% elif ordered_books %}
+        <p>Thank you for your order!</p>
+        <p>Your payment was successful. You purchased the following books:</p>
+        <div class="book-list">
+            <ul>
+                {% for b in ordered_books %}
+                    <li><strong>{{ b.name }}</strong></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <p>Your order has been placed successfully.</p>
+    {% endif %}
+
+    <a class="btn-home" href="{% url 'index' %}">← Back to Home</a>
+</div>
 
 </body>
 </html>
+

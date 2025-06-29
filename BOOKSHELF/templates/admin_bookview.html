@@ -32,6 +32,7 @@
                     <li><a href="{% url 'admin_order_management'%}">Order View</a></li>
                     <li><a href="../adindex">Home</a></li>
                     <li><a href="../adbookview" class="page">Product View</a></li>
+                    <li><a href="{% url 'stock_dashboard'%}">stock dashboard</a></li>
                     {% if user.is_authenticated %}
                     <li><a href="../logout">Sign Out</a></li>
                     </ul>
@@ -39,7 +40,7 @@
             </div>
     
             </div>
-            <div class="nav2">
+            <!-- <div class="nav2">
                 <div class="list2">
                  
                         <a href="../mlmchild ">Children's Books</a>
@@ -49,7 +50,7 @@
                         <a href="../mlmebook">EBooks</a>
                         
             </div>
-            </div>
+            </div> -->
            
         
                  <div class="out">
@@ -118,7 +119,8 @@
         
     
     </div>
-    </div>   
+    </div>
+       
     
 </body>
 </html>

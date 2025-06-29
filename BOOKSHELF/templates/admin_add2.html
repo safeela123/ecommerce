@@ -28,13 +28,14 @@
                     <li><a href="{% url 'admin_order_management'%}">Order View</a></li>
                     <li><a href="../adindex">Home</a></li>
                     <li><a href="../adbookview">Product View</a></li>
+                    <li><a href="{% url 'stock_dashboard'%}">stock dashboard</a></li>
                     <li><a href="" class="page">book Add2</a></li>
                         {% if user.is_authenticated %}
                     <li><a href="../logout">Sign Out</a></li>
                     </ul>
                     {% endif %}
             </div></div>
-        <div class="nav2">
+        <!-- <div class="nav2">
             <div class="list2">
                 <select>
                     <option selected>Select Language</option>
@@ -49,7 +50,7 @@
                     <a href="../admlmebook">EBooks</a>
                     
         </div>
-    </div>
+    </div> -->
 
         <div class="form">
             <form action="" method="POST">
@@ -138,11 +139,8 @@
                         </td>
                         <td>
                             
-                        <select name="stock" class="s4">
-                        <option selected disabled>select option</option>
-                        <option value="in stock"> ✔️ in stock </option>
-                        <option value="out of stock"> ❌ out of stock</option>
-                        </select>
+                        <input type="number"  name="stock" class="s4">
+                       
                         </form>
                         </td>
                         </tr>

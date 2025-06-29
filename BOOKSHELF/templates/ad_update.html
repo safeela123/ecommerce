@@ -27,13 +27,14 @@
                     <li><a href="{% url 'admin_order_management'%}">Order View</a></li>
                     <li><a href="../adindex">Home</a></li>
                     <li><a href="../adbookview" >Product View</a></li>
+                    <li><a href="{% url 'stock_dashboard'%}">stock dashboard</a></li>
                     <li><a href="" class="page">update</a></li>
                     {% if user.is_authenticated %}
                     <li><a href="../logout">Sign Out</a></li>
                     </ul>
                     {% endif %}
             </div></div>
-        <div class="nav2">
+        <!-- <div class="nav2">
             <div class="list2">
              
                     <a href="../mlmchild " >Children's Books</a>
@@ -43,7 +44,7 @@
                     <a href="../mlmebook">EBooks</a>
                     
         </div>
-        </div>
+        </div> -->
 
         <div class="form">
             <form action="../adupdate/{{data.pk}}" method="POST" enctype="multipart/form-data">
@@ -51,7 +52,7 @@
                 <div class="upload">
                    
                         {% if data.doc %}
-    <p>Existing file: <img src="{{ data.doc.url }}" height="200px" width="100" style="margin-left:-30%;"></p>
+    <p>Existing file: <img src="{{ data.doc.url }}" height="300px" width="100" style="margin-left:-30%;"></p>
 {% endif %}
               
                 
@@ -77,10 +78,9 @@
                             </td>
                             <td>
                     <select name="lname">
-                        <option selected disabled>Select Language</option>
                       
                          {% for i in lnames %}
-                            <option value="{{i.id}}">{{i.lname}}</option>
+                            <option value="{{i.id}}"{% if data.lname.id == i.id %}selected{% endif %}>{{i.lname}}</option>
                            
                             {% endfor %}
                        
@@ -96,9 +96,9 @@
                                 </td>
                                 <td>
                         <select name="cname">
-                            <option selected disabled>Select Category</option>
+                            
                             {% for i in cnames %}
-                            <option value="{{i.id}}">{{i.cname}}</option>
+                            <option value="{{i.id}}"{% if data.cname.id == i.id %}selected{% endif %}>{{i.cname}}</option>
                            
                             {% endfor %}
 

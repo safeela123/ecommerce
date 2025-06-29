@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My Orders</title>
+    <link rel="stylesheet" href="{% static 'css/user_order.css'%}">
     <style>
         body {
             background: #f7f7f7;
@@ -16,6 +17,7 @@
             text-align: center;
             color: #333;
             margin-bottom: 30px;
+            margin-top:4%;
         }
 
         .order-card {
@@ -81,13 +83,80 @@
     </style>
 </head>
 <body>
+    <div class="main">
+        <div class="nav">
+            <div class="logo">
+                <img src="{% static 'images/logo.png'%}" height="60px" width="60px" alt="" style="border-radius:70%;">
+                <h3>BOOKSHELF</h3>
+            </div>
 
+          
+           
+
+        <div class="search">
+        <form method="get" action="../index" style="display: flex; align-items: center;">
+        <input type="text" name="q" list="recent-searches" placeholder="Search books..."  value="{{ request.GET.q|default:'' }}"   class="search-input">
+       <datalist id="recent-searches">
+  {% for entry in history %}
+    <option value="{{ entry.query }}">
+  {% endfor %}
+</datalist>
+        <button type="submit"  aria-label="Search" class="search-btn">search</button>
+    </form>
+
+
+</div>
+<div class="list">
+            <ul type="none">
+            
+                <li><a href="../index" >Home</a></li>
+                {% if user.is_authenticated %}
+                <li><a href="{% url 'profile'%}"><img src="{% static 'images/profileicon.png' %}" ></a>
+
+                <li><a href="../logout">Sign Out</a></li>
+                <li><a href="">Contact Us</a></li>
+                <li><a href="{% url 'user_order_view'%}" class="page">Orders</a></li>
+
+                </ul>
+               
+                {% else %}
+                <li><a href="../">Sign In</a></li>
+                <li><a href="../register">Sign Up</a></li>
+                <li><a href="">Contact Us</a></li>
+                </ul>
+                {% endif %}
+                </div>
+             
+       
+
+        <div class="cart">
+            <p>cart</p>
+            <a href="../cart"><img src="{% static 'images/carticon.png' %}"></a>
+             </div>
+                </div>
+        
+    
+    <div class="nav2">
+        <div class="list2">
+         
+                <a href="../mlmchild ">Children's Books</a>
+                <a href="../mlmdetective">Detective Novels </a>
+                <a href="../mlmfiction">Fiction</a>
+                <a href="../mlmbiography">Biography</a>
+                <a href="../mlmebook">EBooks</a>
+                
+    </div>
+    </div>
     <h2>My Orders</h2>
 
     {% if orders %}
         {% for order in orders %}
             <div class="order-card">
+                 <div class="order-item">
+                    <img src="{{order.book.doc.url}}" alt="" height="150px" width="100px">
+                    </div>
                 <div class="order-item">
+
                     <span class="order-label">Book:</span>
                     <strong>{{ order.book.name }}</strong>
                 </div>
@@ -115,7 +184,7 @@
     {% else %}
         <div class="no-orders">You haven't placed any orders yet.</div>
     {% endif %}
-
+</div>
 </body>
 </html>
 

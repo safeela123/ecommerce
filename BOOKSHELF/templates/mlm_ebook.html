@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{%static 'css/mlm_books.css' %}">
 </head>
 <body>
-    <div class="main">
+   <div class="main">
         <div class="nav">
             <div class="logo">
                 <img src="{% static 'images/logo.png'%}" height="60px" width="60px" alt="" style="border-radius:70%;">
@@ -16,34 +16,61 @@
             </div>
 
           
-            <div class="cart"></div>
-            <div class="search">
-                <input type="text" name="search" id="" placeholder="search">
-    
-                <img src="https://img.icons8.com/?size=100&id=aBNtkpYvycsP&format=png&color=000000" height="20px" width="20px" alt="">
-        </div>
+           
 
-        <div class="list">
+        <div class="search">
+        <form method="get" action="../index" style="display: flex; align-items: center;">
+        <input type="text" name="q" list="recent-searches" placeholder="Search books..."  value="{{ request.GET.q|default:'' }}"   class="search-input">
+       <datalist id="recent-searches">
+  {% for entry in history %}
+    <option value="{{ entry.query }}">
+  {% endfor %}
+</datalist>
+        <button type="submit"  aria-label="Search" class="search-btn">search</button>
+    </form>
+
+
+</div>
+<div class="list">
             <ul type="none">
-                <li><a href="../index">Home</a></li>
-                <li><a href="../">Sign In</a></li>
-                <li><a href="../register">Sign Up</a></li>
+            
+                <li><a href="../index" class="page">Home</a></li>
+                {% if user.is_authenticated %}
+                <li><a href=""><img src="{% static 'images/profileicon.png' %}" ></a>
                 <li><a href="../logout">Sign Out</a></li>
                 <li><a href="">Contact Us</a></li>
+                <li><a href="{% url 'user_order_view'%}">Orders</a></li>
+
                 </ul>
-            </div>
-        </div>
-        <div class="nav2">
-            <div class="list2">
+               
+                {% else %}
+                <li><a href="../">Sign In</a></li>
+                <li><a href="../register">Sign Up</a></li>
+                <li><a href="">Contact Us</a></li>
+                </ul>
+                {% endif %}
+                </div>
              
-                    <a href="../mlmchild" >Children's Books</a>
-                    <a href="../mlmdetective" >Detective Novels </a>
-                    <a href="../mlmfiction">Fiction</a>
-                    <a href="../mlmbiography">Biography</a>
-                    <a href="../mlmebook" class="page">EBooks</a>
-                    
-        </div>
-        </div>
+       
+
+        <div class="cart">
+            <p>cart</p>
+            <a href="../cart"><img src="{% static 'images/carticon.png' %}"></a>
+             </div>
+                </div>
+        
+    
+    <div class="nav2">
+        <div class="list2">
+         
+                <a href="../mlmchild ">Children's Books</a>
+                <a href="../mlmdetective">Detective Novels </a>
+                <a href="../mlmfiction">Fiction</a>
+                <a href="../mlmbiography">Biography</a>
+                <a href="../mlmebook">EBooks</a>
+                
+    </div>
+    </div>
         <div class="out">
         <div class="upload" >
             {% for i in data %}
@@ -53,8 +80,8 @@
                 <p class="price">₹{{i.price}}</p>
                 <p class="old"><del>₹{{ i.oldprice }}</del></p>
                 <p class="dis">{{i.discount}}% OFF</p>
-                <p class="view"><a href="">View Details</a></p>
-                
+          <p class="view"><a href="../addcart/{{i.id}}" style="text-decoration:none;color:black;font-size:18px;">Add to Cart</a></p>
+          <p class="view"><a href="../bookdetails/{{i.id}}" style="text-decoration:none;color:black;font-size:18px;">View Book</a></p>
               
             </div>
             {% endfor %}
